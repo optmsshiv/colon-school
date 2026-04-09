@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /assets/js/
+Disallow: /*.log$
+Disallow: /*.bak$
+
+# Sitemap location
+Sitemap: https://www.colonelssainikvidyalaya.in/sitemap.xml
