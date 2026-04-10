@@ -1381,6 +1381,75 @@ function deleteApplication(i) {
   showToast('Application deleted');
 }
 
+// ===================== HERO SLIDER =====================
+(function () {
+  let current = 0;
+  const total = 3;
+  let autoTimer = null;
+  let progressTimer = null;
+  const DURATION = 5000;
+
+  function getSlides() { return document.querySelectorAll('.hs-slide'); }
+  function getDots() { return document.querySelectorAll('.hs-dot'); }
+  function getBar() { return document.getElementById('hs-progress-bar'); }
+
+  function goTo(idx) {
+    const slides = getSlides();
+    const dots = getDots();
+    if (!slides.length) return;
+    slides[current].classList.remove('active');
+    dots[current] && dots[current].classList.remove('active');
+    current = (idx + total) % total;
+    slides[current].classList.add('active');
+    dots[current] && dots[current].classList.add('active');
+    resetProgress();
+  }
+
+  function resetProgress() {
+    const bar = getBar();
+    if (!bar) return;
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        bar.style.transition = `width ${DURATION}ms linear`;
+        bar.style.width = '100%';
+      });
+    });
+  }
+
+  function startAuto() {
+    stopAuto();
+    autoTimer = setInterval(() => goTo(current + 1), DURATION);
+    resetProgress();
+  }
+
+  function stopAuto() {
+    clearInterval(autoTimer);
+  }
+
+  window.sliderNext = function () { goTo(current + 1); stopAuto(); startAuto(); };
+  window.sliderPrev = function () { goTo(current - 1); stopAuto(); startAuto(); };
+  window.sliderGo = function (idx) { goTo(idx); stopAuto(); startAuto(); };
+
+  // Pause on hover
+  document.addEventListener('DOMContentLoaded', function () {
+    const slider = document.getElementById('hero-slider');
+    if (slider) {
+      slider.addEventListener('mouseenter', stopAuto);
+      slider.addEventListener('mouseleave', startAuto);
+      // Touch swipe support
+      let tx = 0;
+      slider.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      slider.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 40) { dx < 0 ? sliderNext() : sliderPrev(); }
+      }, { passive: true });
+      startAuto();
+    }
+  });
+})();
+
 // ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', function () {
   // Load saved data or use defaults
