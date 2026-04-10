@@ -100,9 +100,6 @@ function goPublic() {
   window.location.href = 'index.html';
 }
 function showPanel(id) {
-  // Restore hero preview if reopening school-info panel
-  if (id === 'school-info') setTimeout(_restoreHeroPreview, 60);
-  if (id === 'gallery')     setTimeout(renderGalleryPanel, 60);
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.adm-nav-item').forEach(n => n.classList.remove('active'));
   const panel = document.getElementById('panel-' + id);
@@ -126,13 +123,11 @@ function switchTab(el, targetId) {
 // ===================== SAVE =====================
 function saveAll() {
   // Gather school info
-  // School text fields (heroImg now handled by image upload, skip here)
-  const textFields = ['name', 'tagline', 'desc', 'est', 'seats', 'founder', 'affil'];
-  textFields.forEach(f => {
+  const fields = ['name', 'tagline', 'desc', 'est', 'seats', 'founder', 'affil', 'heroImg'];
+  fields.forEach(f => {
     const el = document.getElementById('si-' + f);
     if (el) D.school[f] = el.value;
   });
-  // heroImg is stored directly by handleHeroFile — no text input to read
   const ct = ['address', 'phone', 'email', 'website', 'hours'];
   ct.forEach(f => { const el = document.getElementById('ci-' + f); if (el) D.contact[f] = el.value; });
   const sess = document.getElementById('adm-session');
@@ -279,159 +274,14 @@ function deleteItem(arr, idx) {
 }
 
 // ===================== GALLERY =====================
-// ================================================================
-// GALLERY IMAGE UPLOAD — drag & drop + file picker
-// Images stored as base64 in localStorage (no server needed)
-// ================================================================
-let _pendingGalImages = [];  // staging area before committing
-
-function addGalleryItem() { /* kept for compatibility — actual upload uses addGalleryItems() */ }
-
-function handleGalFiles(files) {
-  if (!files || !files.length) return;
-  let rejected = 0;
-  Array.from(files).forEach(file => {
-    if (!file.type.startsWith('image/')) { rejected++; return; }
-    if (file.size > 5 * 1024 * 1024) { showToast(file.name + ' exceeds 5 MB — skipped', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-      _pendingGalImages.push({
-        id:      'g' + Date.now() + Math.random().toString(36).slice(2,5),
-        base64:  e.target.result,
-        name:    file.name.replace(/\.[^.]+$/, ''),
-        caption: '',
-        cat:     'Campus'
-      });
-      _renderGalPreviews();
-    };
-    reader.readAsDataURL(file);
-  });
-  if (rejected) showToast(rejected + ' non-image file(s) skipped', 'error');
-  // Reset so same file can be picked again
-  const inp = document.getElementById('gal-file-input');
-  if (inp) inp.value = '';
-}
-
-function handleGalDrop(e) {
-  e.preventDefault();
-  const zone = document.getElementById('gal-drop-zone');
-  if (zone) zone.classList.remove('drag-over');
-  handleGalFiles(e.dataTransfer.files);
-}
-
-function _renderGalPreviews() {
-  const wrap    = document.getElementById('gal-preview-wrap');
-  const list    = document.getElementById('gal-preview-list');
-  const addWrap = document.getElementById('gal-add-wrap');
-  if (!wrap || !list) return;
-  if (!_pendingGalImages.length) {
-    wrap.style.display = 'none';
-    if (addWrap) addWrap.style.display = 'none';
-    return;
-  }
-  wrap.style.display = 'block';
-  if (addWrap) addWrap.style.display = 'block';
-  list.innerHTML = _pendingGalImages.map((img, i) => `
-    <div class="img-preview-row">
-      <img class="img-preview-thumb" src="${img.base64}" alt="preview">
-      <div class="img-preview-fields">
-        <input type="text" placeholder="Caption (e.g. Sports Day 2026)"
-          value="${img.caption}"
-          oninput="_pendingGalImages[${i}].caption = this.value">
-        <select onchange="_pendingGalImages[${i}].cat = this.value">
-          ${['Campus','Academics','Sports','Events','Sainik Training','Cultural']
-              .map(c => `<option ${img.cat===c?'selected':''}>${c}</option>`).join('')}
-        </select>
-      </div>
-      <button class="img-preview-remove" onclick="_removePendingGal('${img.id}')" title="Remove">✕</button>
-    </div>`).join('');
-}
-
-function _removePendingGal(id) {
-  _pendingGalImages = _pendingGalImages.filter(img => img.id !== id);
-  _renderGalPreviews();
-}
-
-function addGalleryItems() {
-  if (!_pendingGalImages.length) { showToast('No images selected', 'error'); return; }
-  if (!D.gallery) D.gallery = [];
-  const count = _pendingGalImages.length;
-
-  _pendingGalImages.forEach(img => {
-    D.gallery.push({
-      url:     img.base64,
-      caption: img.caption.trim() || img.name || 'Gallery Image',
-      cat:     img.cat
-    });
-  });
-
-  try {
-    localStorage.setItem('csv_cms_data', JSON.stringify(D));
-  } catch(e) {
-    showToast('⚠️ Storage nearly full — compress images and try again', 'error');
-  }
-
-  _pendingGalImages = [];
-  _renderGalPreviews();
-  renderGalleryPanel();
-  renderPublicGallery();
-  showToast('✅ ' + count + ' image' + (count > 1 ? 's' : '') + ' added!', 'success');
-}
-
-// ================================================================
-// HERO IMAGE UPLOAD
-// ================================================================
-function handleHeroFile(file) {
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { showToast('Please select an image file', 'error'); return; }
-  if (file.size > 5 * 1024 * 1024)    { showToast('Image exceeds 5 MB limit', 'error'); return; }
-  const reader = new FileReader();
-  reader.onload = e => {
-    if (!D.school) D.school = {};
-    D.school.heroImg = e.target.result;
-    _showHeroPreview(e.target.result, file.name, file.size);
-  };
-  reader.readAsDataURL(file);
-  const inp = document.getElementById('hero-file-input');
-  if (inp) inp.value = '';
-}
-
-function handleHeroDrop(e) {
-  e.preventDefault();
-  const zone = document.getElementById('hero-drop-zone');
-  if (zone) zone.classList.remove('drag-over');
-  handleHeroFile(e.dataTransfer.files[0]);
-}
-
-function _showHeroPreview(src, name, size) {
-  const dropZone    = document.getElementById('hero-drop-zone');
-  const previewWrap = document.getElementById('hero-preview-wrap');
-  const previewImg  = document.getElementById('hero-preview-img');
-  const fileInfo    = document.getElementById('hero-file-info');
-  if (previewImg)  previewImg.src = src;
-  if (fileInfo)    fileInfo.textContent = name + (size ? ' · ' + Math.round(size/1024) + ' KB' : '');
-  if (dropZone)    dropZone.style.display = 'none';
-  if (previewWrap) previewWrap.style.display = 'block';
-}
-
-function clearHeroImage() {
-  if (!confirm('Remove the hero image?')) return;
-  if (D.school) D.school.heroImg = '';
-  const dropZone    = document.getElementById('hero-drop-zone');
-  const previewWrap = document.getElementById('hero-preview-wrap');
-  const previewImg  = document.getElementById('hero-preview-img');
-  if (dropZone)    dropZone.style.display = 'block';
-  if (previewWrap) previewWrap.style.display = 'none';
-  if (previewImg)  previewImg.src = '';
-  renderPublic();
-  showToast('Hero image removed');
-}
-
-function _restoreHeroPreview() {
-  const src = D.school && D.school.heroImg;
-  if (src && src.startsWith('data:')) {
-    _showHeroPreview(src, 'Saved image', null);
-  }
+function addGalleryItem() {
+  const url = v('gal-url'), cap = v('gal-cap'), cat = v('gal-cat');
+  D.gallery.push({ url, caption: cap, cat });
+  document.getElementById('gal-url').value = '';
+  document.getElementById('gal-cap').value = '';
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  showToast('Image added!', 'success');
+  renderAdmin();
 }
 
 // ===================== TICKER =====================
@@ -650,52 +500,19 @@ function renderSchoolInfoPanel() {
 }
 function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
 function renderGalleryPanel() {
-  const count     = document.getElementById('gal-count');
-  const grid      = document.getElementById('gal-admin-grid');
-  const emptyMsg  = document.getElementById('gal-empty');
+  const count = document.getElementById('gal-count');
+  if (count) count.textContent = D.gallery.length;
+  const grid = document.getElementById('gal-admin-grid');
   if (!grid) return;
-
-  const filterCat = document.getElementById('gal-filter-cat')?.value || 'all';
-  const gallery   = D.gallery || [];
-  const items     = filterCat === 'all' ? gallery : gallery.filter(item => item.cat === filterCat);
-
-  if (count) count.textContent = gallery.length;
-
-  if (!items.length) {
-    grid.innerHTML = '';
-    if (emptyMsg) emptyMsg.style.display = 'block';
-    return;
-  }
-  if (emptyMsg) emptyMsg.style.display = 'none';
-
-  grid.innerHTML = items.map(item => {
-    const realIdx = gallery.indexOf(item);
-    const thumb   = item.url || '';
-    return `
-    <div class="gal-admin-thumb">
-      ${thumb
-        ? `<img src="${thumb}" alt="${item.caption || ''}" loading="lazy"
-             onerror="this.parentElement.querySelector('.gal-admin-thumb-bg').style.display='flex';this.style.display='none'">`
-        : ''}
-      <div class="gal-admin-thumb-bg" style="${thumb ? 'display:none;' : ''}position:absolute;inset:0;background:var(--navy-light);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;font-size:12px;color:var(--light);">
-        <span style="font-size:24px;">🖼️</span>${item.caption || 'Image'}
+  grid.innerHTML = D.gallery.map((item, i) => `
+    <div class="gal-thumb">
+      ${item.url ? `<img src="${item.url}" alt="${item.caption}" onerror="this.style.display='none'">` :
+      `<div class="gal-thumb-placeholder"><span>🖼️</span>${item.caption || 'Image'}</div>`}
+      <div class="gal-thumb-overlay">
+        <button class="gal-del-btn" onclick="deleteItem(D.gallery,${i});renderGalleryPanel();renderPublicGallery();">Delete</button>
       </div>
-      <div class="gal-admin-thumb-overlay">
-        <span class="gal-thumb-caption">${item.caption || 'Untitled'}</span>
-        <span class="gal-thumb-cat">${item.cat || ''}</span>
-        <button class="gal-del-btn" onclick="deleteGalleryItem(${realIdx})">🗑 Delete</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function deleteGalleryItem(idx) {
-  if (!confirm('Delete this image from gallery?')) return;
-  D.gallery.splice(idx, 1);
-  localStorage.setItem('csv_cms_data', JSON.stringify(D));
-  renderGalleryPanel();
-  renderPublicGallery();
-  showToast('Image deleted');
+    </div>`).join('') + `<div class="gal-thumb" style="cursor:default;"><div class="gal-thumb-placeholder">
+      <span>➕</span><p style="font-size:11px;">Use the form above to add images</p></div></div>`;
 }
 function renderAcademicsPanel() {
   const ll = document.getElementById('acad-levels-list');
@@ -1316,7 +1133,255 @@ function renderHomeSeats() {
   if (el) el.textContent = (D.school && D.school.seats) ? D.school.seats : '500+';
 }
 
+// ===================== MODAL SYSTEM =====================
+function openModal(type, idx) {
+  const mc = document.getElementById('modal-content');
+  if (!mc) return;
+  let html = '';
+  if (type === 'acad-level') {
+    const item = idx !== undefined ? D.levels[idx] : { name: '', range: '', subjects: '' };
+    html = `<h3>${idx !== undefined ? 'Edit' : 'Add'} Program Level</h3>
+    <div class="form-group" style="margin-bottom:14px;"><label>Level Name</label><input id="m-name" value="${item.name || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Class Range</label><input id="m-range" value="${item.range || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Subjects (one per line)</label><textarea id="m-subjects" rows="6">${item.subjects || ''}</textarea></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal('acad-level',${idx})">Save</button>
+    </div>`;
+  } else if (type === 'cocu') {
+    const item = idx !== undefined ? D.cocu[idx] : { ico: '🎯', name: '' };
+    html = `<h3>${idx !== undefined ? 'Edit' : 'Add'} Activity</h3>
+    <div class="form-group" style="margin-bottom:14px;"><label>Icon (emoji)</label><input id="m-ico" value="${item.ico || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Activity Name</label><input id="m-name" value="${item.name || ''}"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal('cocu',${idx})">Save</button>
+    </div>`;
+  } else if (type === 'facility') {
+    const item = idx !== undefined ? D.facilities[idx] : { ico: '🏛️', name: '', desc: '', tags: '' };
+    html = `<h3>${idx !== undefined ? 'Edit' : 'Add'} Facility</h3>
+    <div class="form-group" style="margin-bottom:14px;"><label>Icon</label><input id="m-ico" value="${item.ico || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Name</label><input id="m-name" value="${item.name || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Description</label><textarea id="m-desc">${item.desc || ''}</textarea></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Tags (comma separated)</label><input id="m-tags" value="${item.tags || ''}"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal('facility',${idx})">Save</button>
+    </div>`;
+  } else if (type === 'notice') {
+    const item = idx !== undefined ? D.notices[idx] : { ico: '📢', type: 'info', title: '', desc: '', date: '' };
+    html = `<h3>${idx !== undefined ? 'Edit' : 'Add'} Notice</h3>
+    <div class="form-group" style="margin-bottom:14px;"><label>Icon</label><input id="m-ico" value="${item.ico || '📢'}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Type</label>
+      <select id="m-type"><option value="info" ${item.type === 'info' ? 'selected' : ''}>Info</option><option value="urgent" ${item.type === 'urgent' ? 'selected' : ''}>Urgent</option><option value="event" ${item.type === 'event' ? 'selected' : ''}>Event</option></select></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Title</label><input id="m-name" value="${item.title || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Description</label><textarea id="m-desc">${item.desc || ''}</textarea></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Date</label><input id="m-date" value="${item.date || ''}"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal('notice',${idx})">Save</button>
+    </div>`;
+  } else if (type === 'news') {
+    const item = idx !== undefined ? D.news[idx] : { title: '', category: '', desc: '', date: '' };
+    html = `<h3>${idx !== undefined ? 'Edit' : 'Add'} News Item</h3>
+    <div class="form-group" style="margin-bottom:14px;"><label>Title</label><input id="m-name" value="${item.title || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Category</label><input id="m-cat" value="${item.category || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Description</label><textarea id="m-desc">${item.desc || ''}</textarea></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Date</label><input id="m-date" value="${item.date || ''}"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal('news',${idx})">Save</button>
+    </div>`;
+  } else if (type === 'adm-date') {
+    const item = idx !== undefined ? D.admDates[idx] : { label: '', value: '' };
+    html = `<h3>${idx !== undefined ? 'Edit' : 'Add'} Important Date</h3>
+    <div class="form-group" style="margin-bottom:14px;"><label>Label</label><input id="m-name" value="${item.label || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Date / Value</label><input id="m-date" value="${item.value || ''}"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal('adm-date',${idx})">Save</button>
+    </div>`;
+  } else if (type === 'adm-doc') {
+    const item = idx !== undefined ? D.admDocs[idx] : { doc: '', req: '' };
+    html = `<h3>${idx !== undefined ? 'Edit' : 'Add'} Required Document</h3>
+    <div class="form-group" style="margin-bottom:14px;"><label>Document Name</label><input id="m-name" value="${item.doc || ''}"></div>
+    <div class="form-group" style="margin-bottom:14px;"><label>Required / Optional</label><input id="m-req" value="${item.req || 'Required'}"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal('adm-doc',${idx})">Save</button>
+    </div>`;
+  }
+  mc.innerHTML = html;
+  document.getElementById('modal-bg').classList.add('open');
+}
 
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+}
+
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function saveModal(type, idx) {
+  if (type === 'acad-level') {
+    const item = { name: v('m-name'), range: v('m-range'), subjects: document.getElementById('m-subjects')?.value || '' };
+    if (idx !== undefined) D.levels[idx] = item; else D.levels.push(item);
+    renderAcademicsPanel(); renderPublicAcademics();
+  } else if (type === 'cocu') {
+    const item = { ico: v('m-ico'), name: v('m-name') };
+    if (idx !== undefined) D.cocu[idx] = item; else D.cocu.push(item);
+    renderAcademicsPanel(); renderPublicAcademics();
+  } else if (type === 'facility') {
+    const item = { ico: v('m-ico'), name: v('m-name'), desc: v('m-desc'), tags: v('m-tags') };
+    if (idx !== undefined) D.facilities[idx] = item; else D.facilities.push(item);
+    renderFacilitiesPanel(); renderPublicFacilities();
+  } else if (type === 'notice') {
+    const item = { ico: v('m-ico'), type: v('m-type'), title: v('m-name'), desc: v('m-desc'), date: v('m-date') };
+    if (idx !== undefined) D.notices[idx] = item; else D.notices.push(item);
+    renderNoticesPanel(); renderPublicNotices();
+  } else if (type === 'news') {
+    const item = { title: v('m-name'), category: v('m-cat'), desc: v('m-desc'), date: v('m-date') };
+    if (idx !== undefined) D.news[idx] = item; else D.news.push(item);
+    renderNewsPanel(); renderPublicNews();
+  } else if (type === 'adm-date') {
+    const item = { label: v('m-name'), value: v('m-date') };
+    if (idx !== undefined) D.admDates[idx] = item; else D.admDates.push(item);
+    renderAdmissionsPanel();
+  } else if (type === 'adm-doc') {
+    const item = { doc: v('m-name'), req: v('m-req') };
+    if (idx !== undefined) D.admDocs[idx] = item; else D.admDocs.push(item);
+    renderAdmissionsPanel();
+  }
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  closeModal();
+  showToast('Saved successfully!');
+}
+
+function deleteItem(arr, idx) {
+  arr.splice(idx, 1);
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  showToast('Deleted');
+}
+
+// ===================== GALLERY ADD =====================
+function addGalleryItem() {
+  const url = document.getElementById('gal-url')?.value.trim();
+  const cap = document.getElementById('gal-cap')?.value.trim() || 'Gallery Image';
+  const cat = document.getElementById('gal-cat')?.value || 'Campus';
+  if (!url) { showToast('Please enter an image URL', 'error'); return; }
+  D.gallery.push({ url, caption: cap, cat });
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  document.getElementById('gal-url').value = '';
+  document.getElementById('gal-cap').value = '';
+  renderGalleryPanel();
+  renderPublicGallery();
+  showToast('Image added!');
+}
+
+// ===================== TICKER ADD =====================
+function addTickerItem() {
+  const val = document.getElementById('new-ticker')?.value.trim();
+  if (!val) { showToast('Please enter a message', 'error'); return; }
+  D.ticker.push(val);
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  document.getElementById('new-ticker').value = '';
+  renderSchoolInfoPanel();
+  renderPublicTicker();
+  showToast('Ticker message added!');
+}
+
+// ===================== SAVE ALL =====================
+function saveAll() {
+  // School info
+  const si = document.getElementById('si-name');
+  if (si) {
+    D.school.name = v('si-name') || D.school.name;
+    D.school.tagline = v('si-tagline') || D.school.tagline;
+    D.school.desc = document.getElementById('si-desc')?.value.trim() || D.school.desc;
+    D.school.est = v('si-est') || D.school.est;
+    D.school.seats = v('si-seats') || D.school.seats;
+    D.school.founder = v('si-founder') || D.school.founder;
+    D.school.affil = v('si-affil') || D.school.affil;
+    D.school.heroImg = v('si-hero-img') || 'assets/images/school_image.png';
+  }
+  // Admissions
+  D.admSession = v('adm-session') || D.admSession;
+  D.admLastDate = v('adm-lastdate') || D.admLastDate;
+  // Contact
+  const ci = document.getElementById('ci-address');
+  if (ci) {
+    D.contact.address = v('ci-address') || D.contact.address;
+    D.contact.phone = v('ci-phone') || D.contact.phone;
+    D.contact.email = v('ci-email') || D.contact.email;
+    D.contact.website = v('ci-website') || D.contact.website;
+    D.contact.hours = v('ci-hours') || D.contact.hours;
+  }
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  renderPublic();
+  const ind = document.getElementById('save-indicator');
+  if (ind) { ind.textContent = '✅ All changes saved'; ind.style.color = 'var(--green)'; }
+  showToast('✅ All changes saved!');
+}
+
+// ===================== SHOW TOAST =====================
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  const tm = document.getElementById('toast-msg');
+  if (!t || !tm) return;
+  tm.textContent = msg;
+  t.style.background = type === 'error' ? '#dc2626' : '#16a34a';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===================== APPLICATIONS DETAIL VIEW =====================
+function viewAppDetail(i) {
+  const app = D.applications[i];
+  if (!app) return;
+  app.read = true;
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  const mc = document.getElementById('modal-content');
+  if (!mc) return;
+  mc.innerHTML = `
+    <div style="max-width:560px;">
+      <h3 style="font-family:'Cinzel',serif;color:var(--navy);margin-bottom:4px;">${app.sname}</h3>
+      <p style="font-size:12px;color:var(--light);margin-bottom:20px;">Token: ${app.token} · Submitted ${app.date}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:var(--off);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;">Class</div><div style="font-weight:700;color:var(--navy);">${app.cls}</div></div>
+        <div style="background:var(--off);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;">Type</div><div style="font-weight:700;color:var(--navy);">${app.type}</div></div>
+        <div style="background:var(--off);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;">Father</div><div style="font-weight:700;color:var(--navy);">${app.fname}</div></div>
+        <div style="background:var(--off);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;">Mother</div><div style="font-weight:700;color:var(--navy);">${app.mname || '—'}</div></div>
+        <div style="background:var(--off);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;">Phone</div><div style="font-weight:700;color:var(--navy);">${app.phone}</div></div>
+        <div style="background:var(--off);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;">Email</div><div style="font-weight:700;color:var(--navy);">${app.email || '—'}</div></div>
+      </div>
+      <div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:16px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Address</div><div style="font-size:13.5px;color:var(--mid);">${app.address}</div></div>
+      ${app.msg ? `<div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:16px;"><div style="font-size:10px;color:var(--light);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Message</div><div style="font-size:13.5px;color:var(--mid);">${app.msg}</div></div>` : ''}
+      <div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Close</button></div>
+    </div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function updateAppStatus(i, val) {
+  if (!D.applications[i]) return;
+  D.applications[i].status = val;
+  if (D.applications[i].timeline) {
+    const tl = D.applications[i].timeline;
+    if (val === 'Under Review' && tl[1]) { tl[1].done = true; tl[1].date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+    if (val === 'Shortlisted' && tl[2]) { tl[2].done = true; tl[2].date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+  }
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  showToast('Status updated');
+  updateInboxBadges();
+}
+
+function deleteApplication(i) {
+  if (!confirm('Delete this application?')) return;
+  D.applications.splice(i, 1);
+  localStorage.setItem('csv_cms_data', JSON.stringify(D));
+  renderApplicationsPanel();
+  showToast('Application deleted');
+}
+
+// ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', function () {
   // Load saved data or use defaults
   try {
