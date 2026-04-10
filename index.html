@@ -36,7 +36,6 @@
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <span class="lightbox-close">✕</span>
     <img id="lightbox-img" src="" alt="">
-    <div class="lightbox-caption" id="lightbox-caption"></div>
   </div>
 
   <!-- MODAL -->
@@ -873,45 +872,14 @@
 
     <!-- ===== PAGE: GALLERY ===== -->
     <div id="pp-gallery" class="pp">
-      <div class="page-hero gallery-hero-bg">
+      <div class="page-hero">
         <span class="label">Campus Life</span>
         <h1>Our <em>Gallery</em></h1>
-        <p>A vibrant glimpse into the life, spirit, and milestones of Colonel's Sainik Vidyalaya.</p>
+        <p>A glimpse into the vibrant life at Colonel's Sainik Vidyalaya.</p>
       </div>
-
-      <!-- Gallery Category Filter Bar -->
-      <div class="gallery-filter-wrap">
-        <div class="gallery-filter-bar" id="gallery-filter-bar">
-          <button class="gfb active" onclick="filterGallery('all',this)">🌐 All</button>
-          <button class="gfb" onclick="filterGallery('Campus',this)">🏫 Campus</button>
-          <button class="gfb" onclick="filterGallery('Sports',this)">🏃 Sports</button>
-          <button class="gfb" onclick="filterGallery('Events',this)">🎉 Events</button>
-          <button class="gfb" onclick="filterGallery('Parade',this)">🎖️ Parade</button>
-          <button class="gfb" onclick="filterGallery('Classrooms',this)">📚 Classrooms</button>
-          <button class="gfb" onclick="filterGallery('Hostel',this)">🏠 Hostel</button>
-          <button class="gfb" onclick="filterGallery('Arts',this)">🎨 Arts</button>
-          <button class="gfb" onclick="filterGallery('Lab',this)">🔬 Lab</button>
-          <button class="gfb" onclick="filterGallery('Achievements',this)">🏆 Achievements</button>
-          <button class="gfb" onclick="filterGallery('Library',this)">📖 Library</button>
-          <button class="gfb" onclick="filterGallery('Music',this)">🎵 Music</button>
-          <button class="gfb" onclick="filterGallery('Dance',this)">💃 Dance</button>
-          <button class="gfb" onclick="filterGallery('NCC',this)">🪖 NCC</button>
-          <button class="gfb" onclick="filterGallery('Annual Day',this)">🌟 Annual Day</button>
-          <button class="gfb" onclick="filterGallery('Morning Assembly',this)">🌅 Assembly</button>
-          <button class="gfb" onclick="filterGallery('Infrastructure',this)">🏗️ Infrastructure</button>
-          <button class="gfb" onclick="filterGallery('Others',this)">📷 Others</button>
-        </div>
-      </div>
-
-      <section class="sec" style="padding-top:16px;">
+      <section class="sec">
         <div class="container">
-          <div id="gallery-count-bar" class="gallery-count-bar"></div>
-          <div class="gallery-grid gallery-grid-vibrant" id="pub-gallery-grid"><!-- rendered by JS --></div>
-          <div id="gallery-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--light);">
-            <div style="font-size:48px;margin-bottom:16px;">📭</div>
-            <h3 style="color:var(--navy);margin-bottom:8px;">No images in this category yet</h3>
-            <p>Check back soon — more photos are coming!</p>
-          </div>
+          <div class="gallery-grid" id="pub-gallery-grid"><!-- rendered by JS --></div>
         </div>
       </section>
     </div>
