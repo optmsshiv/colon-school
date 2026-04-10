@@ -872,117 +872,16 @@
 
     <!-- ===== PAGE: GALLERY ===== -->
     <div id="pp-gallery" class="pp">
-
-      <!-- GALLERY HERO BANNER -->
-      <div class="gal-hero-banner" id="gal-hero-banner">
-        <!-- Rotating background slides -->
-        <div class="gal-hero-slides" id="gal-hero-slides">
-          <div class="gal-hero-slide active" style="background:linear-gradient(135deg,#0f2057 0%,#1a3a96 50%,#b88c0b 100%);">
-            <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image.png')"></div>
-          </div>
-          <div class="gal-hero-slide" style="background:linear-gradient(135deg,#1a3a96 0%,#0f2057 60%,#2e6b2e 100%);">
-            <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image_1.jpeg')"></div>
-          </div>
-          <div class="gal-hero-slide" style="background:linear-gradient(135deg,#b88c0b 0%,#0f2057 70%,#1a3a96 100%);">
-            <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image.png')"></div>
-          </div>
-        </div>
-
-        <!-- Rotating watermark -->
-        <div class="gal-watermark-wrap" id="gal-watermark-wrap">
-          <div class="gal-watermark">
-            <span class="gal-wm-text">Colonel's Sainik Vidyalaya</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Madhepura, Bihar</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Cradle For Excellence</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">CBSE School</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Colonel's Sainik Vidyalaya</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Madhepura, Bihar</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Cradle For Excellence</span>
-            <span class="gal-wm-sep">✦</span>
-          </div>
-        </div>
-
-        <!-- Overlay content -->
-        <div class="gal-hero-overlay"></div>
-        <div class="gal-hero-content">
-          <span class="gal-hero-label">Campus Life · Memories · Milestones</span>
-          <h1 class="gal-hero-title">Our <em>Gallery</em></h1>
-          <p class="gal-hero-sub">A vivid glimpse into the vibrant life, achievements, and spirit of Colonel's Sainik Vidyalaya.</p>
-        </div>
-
-        <!-- Slide dots -->
-        <div class="gal-hero-dots" id="gal-hero-dots">
-          <button class="gal-hdot active" onclick="galHeroGo(0)"></button>
-          <button class="gal-hdot" onclick="galHeroGo(1)"></button>
-          <button class="gal-hdot" onclick="galHeroGo(2)"></button>
-        </div>
+      <div class="page-hero">
+        <span class="label">Campus Life</span>
+        <h1>Our <em>Gallery</em></h1>
+        <p>A glimpse into the vibrant life at Colonel's Sainik Vidyalaya.</p>
       </div>
-
-      <!-- STAT STRIP -->
-      <div class="gal-stat-strip">
-        <div class="gal-stat-inner">
-          <div class="gal-stat-item">
-            <span class="gal-stat-num" id="gal-stat-total">36</span>
-            <span class="gal-stat-label">Total Photos</span>
-          </div>
-          <div class="gal-stat-divider"></div>
-          <div class="gal-stat-item">
-            <span class="gal-stat-num">12</span>
-            <span class="gal-stat-label">Categories</span>
-          </div>
-          <div class="gal-stat-divider"></div>
-          <div class="gal-stat-item">
-            <span class="gal-stat-num">2026</span>
-            <span class="gal-stat-label">Founding Year</span>
-          </div>
-          <div class="gal-stat-divider"></div>
-          <div class="gal-stat-item">
-            <span class="gal-stat-num">2026–Present</span>
-            <span class="gal-stat-label">Years Covered</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- FILTER BAR -->
-      <section class="gal-filter-sec">
+      <section class="sec">
         <div class="container">
-          <div class="gal-filter-bar" id="gal-filter-bar">
-            <button class="gal-filter-btn active" data-cat="all" onclick="filterGallery('all')">All Photos</button>
-            <button class="gal-filter-btn" data-cat="Events" onclick="filterGallery('Events')">🎉 Events</button>
-            <button class="gal-filter-btn" data-cat="Campus" onclick="filterGallery('Campus')">🏛️ Campus</button>
-            <button class="gal-filter-btn" data-cat="Meetings" onclick="filterGallery('Meetings')">🤝 Meetings</button>
-            <button class="gal-filter-btn" data-cat="Community" onclick="filterGallery('Community')">👥 Community</button>
-            <button class="gal-filter-btn" data-cat="Awards" onclick="filterGallery('Awards')">🏆 Awards</button>
-            <button class="gal-filter-btn" data-cat="Sports" onclick="filterGallery('Sports')">⚽ Sports</button>
-            <button class="gal-filter-btn" data-cat="Hostel" onclick="filterGallery('Hostel')">🏠 Hostel</button>
-            <button class="gal-filter-btn" data-cat="Labs" onclick="filterGallery('Labs')">🔬 Labs</button>
-            <button class="gal-filter-btn" data-cat="Arts" onclick="filterGallery('Arts')">🎨 Arts</button>
-            <button class="gal-filter-btn" data-cat="Achievements" onclick="filterGallery('Achievements')">🌟 Achievements</button>
-            <button class="gal-filter-btn" data-cat="Parade" onclick="filterGallery('Parade')">🪖 Parade</button>
-            <button class="gal-filter-btn" data-cat="Classroom" onclick="filterGallery('Classroom')">📚 Classroom</button>
-          </div>
+          <div class="gallery-grid" id="pub-gallery-grid"><!-- rendered by JS --></div>
         </div>
       </section>
-
-      <!-- MASONRY GALLERY GRID -->
-      <section class="gal-main-sec">
-        <div class="container">
-          <div class="gal-masonry-grid" id="gal-masonry-grid">
-            <!-- Rendered by JS -->
-          </div>
-          <div id="gal-empty-msg" style="display:none;text-align:center;padding:60px 20px;color:var(--light);">
-            <div style="font-size:48px;margin-bottom:12px;">🖼️</div>
-            <p>No photos in this category yet.</p>
-          </div>
-        </div>
-      </section>
-
     </div>
 
     <!-- ===== PAGE: FACILITIES ===== -->
