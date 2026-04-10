@@ -8,9 +8,9 @@
 // ============================================================
 
 define('DB_HOST',     'localhost');           // Usually 'localhost' on Bluehost
-define('DB_NAME',     'youruser_csv_db');     // Replace 'youruser_' with your cPanel username
-define('DB_USER',     'youruser_csvadmin');   // Your MySQL username
-define('DB_PASS',     'YOUR_DB_PASSWORD');    // Your MySQL password
+define('DB_NAME',     'edrppymy_csv_db');     // Replace 'youruser_' with your cPanel username
+define('DB_USER',     'edrppymy_csv_admin');   // Your MySQL username
+define('DB_PASS',     '13579@Admin');    // Your MySQL password
 define('DB_CHARSET',  'utf8mb4');
 
 // ============================================================
