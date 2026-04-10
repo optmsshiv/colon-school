@@ -409,16 +409,55 @@ function renderPublicAcademics() {
   if (cg) cg.innerHTML = D.cocu.map(c => `
     <div class="cocu-c"><div class="ico">${c.ico}</div><h4>${c.name}</h4></div>`).join('');
 }
-function renderPublicGallery() {
+function renderPublicGallery(filterCat) {
   const g = document.getElementById('pub-gallery-grid');
+  const emptyEl = document.getElementById('gallery-empty');
+  const countBar = document.getElementById('gallery-count-bar');
   if (!g) return;
-  if (!D.gallery.length) { g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--light);">No gallery images yet. Admin can add images.</div>'; return; }
-  g.innerHTML = D.gallery.map((item, i) => `
-    <div class="gallery-item" onclick="openLightbox('${item.url}')">
-      ${item.url ? `<img src="${item.url}" alt="${item.caption}" onerror="this.parentElement.innerHTML='<div class=gallery-item-placeholder><span>🖼️</span>${item.caption}</div>'">` :
-      `<div class="gallery-item-placeholder"><span>🖼️</span>${item.caption || 'Image ' + i}</div>`}
-      <div class="gallery-overlay"><span class="gallery-caption">${item.caption}</span></div>
-    </div>`).join('');
+
+  const catColors = {
+    'Campus':'#0f2057','Classrooms':'#1d4ed8','Sports':'#15803d','Events':'#7c3aed',
+    'Parade':'#b8860b','Hostel':'#0891b2','Lab':'#dc2626','Arts':'#db2777',
+    'Achievements':'#d97706','Library':'#6d28d9','Music':'#0f766e','Dance':'#be185d',
+    'NCC':'#1e4620','Science Fair':'#9333ea','Annual Day':'#ea580c',
+    'Morning Assembly':'#0369a1','Infrastructure':'#374151','Others':'#475569'
+  };
+
+  let items = D.gallery;
+  if (filterCat && filterCat !== 'all') {
+    items = D.gallery.filter(item => item.cat === filterCat || item.category === filterCat);
+  }
+
+  if (countBar) {
+    const label = filterCat && filterCat !== 'all' ? filterCat : 'All Categories';
+    countBar.innerHTML = `Showing <strong>${items.length}</strong> photo${items.length !== 1 ? 's' : ''} · <em>${label}</em>`;
+    countBar.style.display = items.length > 0 ? 'block' : 'none';
+  }
+
+  if (!items.length) {
+    g.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  g.innerHTML = items.map((item, i) => {
+    const cat = item.cat || item.category || '';
+    const color = catColors[cat] || '#0f2057';
+    const cap = item.caption || ('Image ' + (i + 1));
+    return `
+    <div class="gallery-item" onclick="openLightbox('${item.url}','${cap.replace(/'/g,"\\'")}')">
+      ${cat ? `<div class="gallery-item-cat" style="background:${color}CC;">${cat}</div>` : ''}
+      ${item.url
+        ? `<img src="${item.url}" alt="${cap}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=gallery-item-placeholder><span>🖼️</span><p>${cap}</p></div>'">`
+        : `<div class="gallery-item-placeholder"><span>🖼️</span><p>${cap}</p></div>`}
+      <div class="gallery-zoom-icon">🔍</div>
+      <div class="gallery-overlay">
+        <span class="gallery-caption">${cap}</span>
+        ${cat ? `<span class="gallery-caption-cat">${cat}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 function renderPublicFacilities() {
   const g = document.getElementById('pub-fac-g');
@@ -627,8 +666,24 @@ function renderContactPanel() {
 }
 
 // ===================== LIGHTBOX =====================
-function openLightbox(url) { if (!url) return; document.getElementById('lightbox-img').src = url; document.getElementById('lightbox').classList.add('open'); }
-function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+function openLightbox(url, caption) {
+  if (!url) return;
+  document.getElementById('lightbox-img').src = url;
+  const capEl = document.getElementById('lightbox-caption');
+  if (capEl) capEl.textContent = caption || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function filterGallery(cat, btn) {
+  // Update active button
+  document.querySelectorAll('.gfb').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPublicGallery(cat);
+}
 
 // ===================== MOBILE NAV =====================
 function toggleMobNav() {

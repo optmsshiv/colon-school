@@ -39,7 +39,7 @@ $images = $listStmt->fetchAll();
 $allCats = $pdo->query("SELECT DISTINCT category FROM gallery_images ORDER BY category")->fetchAll(PDO::FETCH_COLUMN);
 
 // ── Category icons ─────────────────────────────────────
-$catIcons = ['Campus'=>'🏫','Classrooms'=>'📚','Sports'=>'🏃','Events'=>'🎉','Parade'=>'🎖️','Hostel'=>'🏠','Lab'=>'🔬','Arts'=>'🎨','Achievements'=>'🏆','Library'=>'📖','Music'=>'🎵','Dance'=>'💃','NCC'=>'🪖','Science Fair'=>'🧪','Annual Day'=>'🌟','Morning Assembly'=>'🌅','Infrastructure'=>'🏗️','Others'=>'📷'];
+$catIcons = ['Campus'=>'🏫','Classrooms'=>'📚','Sports'=>'🏃','Events'=>'🎉','Parade'=>'🎖️','Hostel'=>'🏠','Lab'=>'🔬','Arts'=>'🎨','Achievements'=>'🏆','Others'=>'📷'];
 $catIcon  = fn($c) => $catIcons[$c] ?? '🖼️';
 ?>
 <!DOCTYPE html>
@@ -86,52 +86,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 }
 .back-site:hover{background:rgba(212,160,23,.4);}
 
-/* ── Sidebar ── */
-.page-shell{display:flex;min-height:calc(100vh - 62px);}
-.sidebar{
-  width:240px;min-width:240px;background:linear-gradient(180deg,var(--navy) 0%,#0d1a4a 100%);
-  color:#fff;display:flex;flex-direction:column;padding:0;
-  position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto;z-index:50;
-  box-shadow:3px 0 18px rgba(0,0,0,.18);
-}
-.sidebar-profile{
-  padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1);
-  text-align:center;
-}
-.sidebar-avatar{
-  width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.15);
-  border:2px solid rgba(184,134,11,.6);margin:0 auto 10px;
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-}
-.sidebar-name{font-size:13.5px;font-weight:700;margin-bottom:2px;}
-.sidebar-role{font-size:11px;opacity:.6;}
-.sidebar-nav{padding:14px 10px;flex:1;}
-.sidebar-section{font-size:10px;font-weight:700;letter-spacing:1.2px;
-  color:rgba(255,255,255,.4);padding:10px 12px 6px;text-transform:uppercase;}
-.sidebar-link{
-  display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:9px;
-  color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;font-weight:500;
-  cursor:pointer;transition:.18s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;
-}
-.sidebar-link:hover{background:rgba(255,255,255,.1);color:#fff;}
-.sidebar-link.active{background:rgba(184,134,11,.25);color:#fde68a;border:1px solid rgba(184,134,11,.3);}
-.sidebar-link .sl-ico{font-size:16px;width:22px;text-align:center;}
-.sidebar-link .sl-badge{margin-left:auto;background:rgba(184,134,11,.35);color:#fde68a;
-  font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;}
-.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.1);}
-.sidebar-footer a{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.55);
-  font-size:12px;text-decoration:none;transition:.18s;}
-.sidebar-footer a:hover{color:#fff;}
-
-/* ── Collapse sidebar on small screens ── */
-@media(max-width:900px){
-  .sidebar{width:0;min-width:0;overflow:hidden;padding:0;}
-  .sidebar.open{width:220px;min-width:220px;padding:0;}
-  .mob-sidebar-btn{display:block !important;}
-}
-
 /* ── Layout ── */
-.main-wrap{flex:1;max-width:1160px;padding:28px 24px;overflow-x:hidden;}
+.main-wrap{max-width:1400px;margin:0 auto;padding:28px 24px;}
 
 /* ── Stats Cards ── */
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;}
@@ -308,61 +264,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
     </div>
   </div>
   <div class="topbar-right">
-    <button onclick="document.getElementById('sidebar').classList.toggle('open')"
-      style="display:none;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:20px;padding:6px 10px;border-radius:7px;cursor:pointer;" id="sidebar-toggle" class="mob-sidebar-btn">☰</button>
     <a href="<?= SITE_URL ?>/index.html" target="_blank" class="back-site">🌐 View Site</a>
     <span class="topbar-user">👤 <?= e($_SESSION['admin_name'] ?: $_SESSION['admin_user']) ?></span>
     <a href="logout.php" class="btn-logout">Logout</a>
   </div>
 </div>
 
-<!-- Page Shell -->
-<div class="page-shell">
-
-<!-- ═══ SIDEBAR ═══ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-profile">
-    <div class="sidebar-avatar">🎖️</div>
-    <div class="sidebar-name"><?= e($_SESSION['admin_name'] ?: $_SESSION['admin_user']) ?></div>
-    <div class="sidebar-role">Gallery Administrator</div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="sidebar-section">Main</div>
-    <button class="sidebar-link active" onclick="scrollToSection('upload-section')" title="Upload Images">
-      <span class="sl-ico">📤</span> Upload Images
-    </button>
-    <button class="sidebar-link" onclick="scrollToSection('gallery-section')" title="Manage Gallery">
-      <span class="sl-ico">🖼️</span> Gallery
-      <span class="sl-badge"><?= $total ?></span>
-    </button>
-
-    <div class="sidebar-section">Categories</div>
-    <?php
-    $sidebarCats = ['Campus'=>'🏫','Classrooms'=>'📚','Sports'=>'🏃','Events'=>'🎉','Parade'=>'🎖️',
-      'Hostel'=>'🏠','Lab'=>'🔬','Arts'=>'🎨','Achievements'=>'🏆','Library'=>'📖',
-      'Music'=>'🎵','Dance'=>'💃','NCC'=>'🪖','Science Fair'=>'🧪','Annual Day'=>'🌟',
-      'Morning Assembly'=>'🌅','Infrastructure'=>'🏗️','Others'=>'📷'];
-    foreach($sidebarCats as $cat => $icon):
-      $cnt = 0;
-      foreach($cats as $c) { if($c['category'] === $cat) $cnt = $c['cnt']; }
-    ?>
-    <a class="sidebar-link" href="?cat=<?= urlencode($cat) ?>" title="<?= e($cat) ?>">
-      <span class="sl-ico"><?= $icon ?></span> <?= e($cat) ?>
-      <?php if($cnt): ?><span class="sl-badge"><?= $cnt ?></span><?php endif; ?>
-    </a>
-    <?php endforeach; ?>
-
-    <div class="sidebar-section">Tools</div>
-    <a class="sidebar-link" href="<?= SITE_URL ?>/index.html" target="_blank">
-      <span class="sl-ico">🌐</span> View Website
-    </a>
-    <a class="sidebar-link" href="logout.php">
-      <span class="sl-ico">🚪</span> Logout
-    </a>
-  </nav>
-</aside>
-
-<!-- ═══ MAIN CONTENT ═══ -->
 <div class="main-wrap">
 
 <?php if ($flash): ?>
@@ -399,7 +306,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 </div>
 
 <!-- ═══ UPLOAD CARD ═══ -->
-<div class="upload-card" id="upload-section">
+<div class="upload-card">
   <div class="section-title">📤 Upload New Gallery Images</div>
 
   <div id="upload-progress">
@@ -429,8 +336,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
         <label>Category</label>
         <select id="up-category">
           <?php
-          $cats_list = ['Campus','Classrooms','Sports','Events','Parade','Hostel','Lab','Arts','Achievements',
-                        'Library','Music','Dance','NCC','Science Fair','Annual Day','Morning Assembly','Infrastructure','Others'];
+          $cats_list = ['Campus','Classrooms','Sports','Events','Parade','Hostel','Lab','Arts','Achievements','Others'];
           foreach($cats_list as $c) echo "<option value=\"".e($c)."\">".e($catIcon($c).' '.$c)."</option>";
           ?>
         </select>
@@ -450,7 +356,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 </div>
 
 <!-- ═══ GALLERY LIST ═══ -->
-<div class="upload-card" id="gallery-section">
+<div class="upload-card">
   <div class="section-title">🖼️ Gallery Images
     <span style="font-size:13px;font-weight:400;color:var(--muted);margin-left:auto;">
       <?= $filteredTotal ?> image<?= $filteredTotal !== 1 ? 's' : '' ?>
@@ -560,7 +466,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 </div><!-- /.upload-card -->
 
 </div><!-- /.main-wrap -->
-</div><!-- /.page-shell -->
 
 <!-- ═══ EDIT MODAL ═══ -->
 <div class="modal-bg" id="edit-modal">
@@ -794,14 +699,6 @@ async function saveEdit() {
   const data = await res.json();
   if(data.success) { closeEdit(); location.reload(); }
   else alert('Error: '+data.message);
-}
-
-// ── Sidebar scroll ─────────────────────────────────────────
-function scrollToSection(id) {
-  document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
-  // Update active link
-  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-  event.currentTarget?.classList.add('active');
 }
 
 // Close modal on backdrop click
