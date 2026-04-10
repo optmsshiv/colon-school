@@ -19,7 +19,7 @@
       z-index: 9999;
       transition: opacity 0.4s, visibility 0.4s;
     }
-    #login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #login-screen.hidden { opacity: 0; visibility: hidden; }
     .login-card {
       background: #fff; border-radius: 20px; padding: 48px 44px;
       width: 100%; max-width: 400px;
@@ -35,26 +35,31 @@
       margin: 0 auto 20px;
       box-shadow: 0 8px 24px rgba(184,134,11,0.35);
     }
-    .login-card h2 { font-family: 'Cinzel', serif; font-size: 20px; color: var(--navy); margin-bottom: 4px; }
-    .login-card p  { font-size: 13px; color: var(--light); margin-bottom: 32px; }
-    .login-field   { margin-bottom: 16px; text-align: left; }
+    .login-card h2 {
+      font-family: 'Cinzel', serif; font-size: 20px;
+      color: var(--navy); margin-bottom: 4px;
+    }
+    .login-card p { font-size: 13px; color: var(--light); margin-bottom: 32px; }
+    .login-field { margin-bottom: 16px; text-align: left; }
     .login-field label {
       display: block; font-size: 12px; font-weight: 700;
-      color: var(--navy); margin-bottom: 6px;
-      letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--navy); margin-bottom: 6px; letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
     .login-field input {
       width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
       padding: 12px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif;
-      color: var(--text); background: var(--off); transition: all 0.2s; outline: none;
+      color: var(--text); background: var(--off); transition: all 0.2s;
+      outline: none;
     }
     .login-field input:focus { border-color: var(--navy); background: #fff; box-shadow: 0 0 0 3px rgba(15,32,87,0.07); }
     .login-btn {
       width: 100%; padding: 13px; border-radius: 10px;
       background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-      color: #fff; font-size: 14px; font-weight: 700; border: none;
-      cursor: pointer; font-family: 'DM Sans', sans-serif;
-      box-shadow: 0 4px 18px rgba(15,32,87,0.3); transition: all 0.25s; margin-top: 6px;
+      color: #fff; font-size: 14px; font-weight: 700;
+      border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 4px 18px rgba(15,32,87,0.3);
+      transition: all 0.25s; margin-top: 6px;
     }
     .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(15,32,87,0.35); }
     .login-error {
@@ -63,23 +68,28 @@
       margin-top: 14px; display: none;
     }
     .login-error.show { display: block; }
-    .login-footer  { margin-top: 24px; font-size: 11.5px; color: var(--light); }
-    .lock-icon     { font-size: 32px; margin-bottom: 16px; display: block; animation: lockBounce 2s ease-in-out infinite; }
+    .login-footer { margin-top: 24px; font-size: 11.5px; color: var(--light); }
+    .login-footer a { color: var(--navy); text-decoration: none; font-weight: 600; }
+    /* Lock icon animation */
+    .lock-icon { font-size: 32px; margin-bottom: 16px; display: block;
+      animation: lockBounce 2s ease-in-out infinite; }
     @keyframes lockBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
-    #admin-view    { display: none; }
+    /* Hide the main admin until logged in */
+    #admin-view { display: none; }
+    /* "View Site" link style */
     .view-site-link {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: 12.5px; color: rgba(255,255,255,0.6);
-      text-decoration: none; margin-top: 20px; transition: color 0.2s;
+      text-decoration: none; margin-top: 20px;
+      transition: color 0.2s;
     }
     .view-site-link:hover { color: #fff; }
-    @keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-8px);}40%,80%{transform:translateX(8px);}}
   </style>
 </head>
 <body style="background:var(--off);">
 
 <!-- TOAST -->
-<div class="toast" id="toast">✅ <span id="toast-msg">Saved!</span></div>
+<div class="toast" id="toast">✅ <span id="toast-msg">Saved successfully!</span></div>
 
 <!-- MODAL -->
 <div class="modal-bg" id="modal-bg">
@@ -100,8 +110,8 @@
       </div>
       <div class="login-field">
         <label>Password</label>
-        <input type="password" id="login-pass" placeholder="Enter password"
-          autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <button class="login-btn" onclick="doLogin()">Login to Admin Panel →</button>
       <div class="login-error" id="login-error">❌ Incorrect username or password.</div>
@@ -114,7 +124,6 @@
 <!-- ===== ADMIN PANEL ===== -->
 <div id="admin-view">
   <div class="admin-wrap">
-
     <!-- Sidebar -->
     <aside class="adm-sidebar">
       <div class="adm-logo">
@@ -147,7 +156,7 @@
           <span class="nav-ico">📢</span> Notices
         </div>
         <div class="adm-nav-item" onclick="showPanel('news')">
-          <span class="nav-ico">📰</span> News &amp; Events
+          <span class="nav-ico">📰</span> News & Events
         </div>
         <div class="adm-nav-item" onclick="showPanel('contact-info')">
           <span class="nav-ico">📞</span> Contact Info
@@ -177,20 +186,19 @@
       <div class="adm-topbar">
         <h1 id="adm-title">Dashboard</h1>
         <div class="adm-topbar-right">
-          <span class="save-indicator" id="save-indicator" style="display:none;">✅ Saved</span>
+          <span class="save-indicator" id="save-indicator">✅ All changes saved</span>
           <button class="save-btn" onclick="saveAll()">💾 Save Changes</button>
         </div>
       </div>
-
       <div class="adm-content">
 
-        <!-- ===== DASHBOARD ===== -->
+        <!-- DASHBOARD -->
         <div class="adm-panel active" id="panel-dashboard">
           <div class="dash-grid" style="grid-template-columns:repeat(3,1fr);">
             <div class="dash-card"><div class="dc-icon">🖼️</div><div class="dc-num" id="d-gallery">0</div><div class="dc-label">Gallery Images</div></div>
             <div class="dash-card"><div class="dc-icon">📢</div><div class="dc-num" id="d-notices">0</div><div class="dc-label">Active Notices</div></div>
             <div class="dash-card"><div class="dc-icon">📰</div><div class="dc-num" id="d-news">0</div><div class="dc-label">News Items</div></div>
-            <div class="dash-card"><div class="dc-icon">🏛️</div><div class="dc-num" id="d-facilities">0</div><div class="dc-label">Facilities</div></div>
+            <div class="dash-card"><div class="dc-icon">🏛️</div><div class="dc-num" id="d-facilities">0</div><div class="dc-label">Facilities Listed</div></div>
             <div class="dash-card" style="cursor:pointer;" onclick="showPanel('enquiries')"><div class="dc-icon">📨</div><div class="dc-num" id="d-enquiries">0</div><div class="dc-label">Enquiries</div></div>
             <div class="dash-card" style="cursor:pointer;" onclick="showPanel('applications')"><div class="dc-icon">📋</div><div class="dc-num" id="d-applications">0</div><div class="dc-label">Applications</div></div>
           </div>
@@ -204,7 +212,7 @@
           </div>
         </div>
 
-        <!-- ===== SCHOOL INFO ===== -->
+        <!-- SCHOOL INFO -->
         <div class="adm-panel" id="panel-school-info">
           <div class="form-section">
             <h3>🏫 Basic School Information</h3>
@@ -224,40 +232,16 @@
               <div class="form-group"><label>Affiliation</label><input type="text" id="si-affil" placeholder="CBSE, Delhi"></div>
             </div>
           </div>
-
-          <!-- ===== HERO IMAGE UPLOAD ===== -->
           <div class="form-section">
             <h3>🖼️ Hero Section Image</h3>
-            <p style="font-size:13px;color:var(--mid);margin-bottom:16px;">Upload a photo of your school campus that appears on the homepage hero section. Recommended: 1200×675px (16:9), JPG or PNG, max 5 MB.</p>
-
-            <!-- Drop zone (shown when no image) -->
-            <div id="hero-drop-zone"
-              class="img-drop-zone"
-              onclick="document.getElementById('hero-file-input').click()"
-              ondragover="event.preventDefault();this.classList.add('drag-over')"
-              ondragleave="this.classList.remove('drag-over')"
-              ondrop="handleHeroDrop(event)">
-              <span class="img-drop-zone-icon">🏛️</span>
-              <div class="img-drop-zone-title">Click to upload or drag &amp; drop your hero image</div>
-              <div class="img-drop-zone-sub">JPG · PNG · WEBP · Max 5 MB</div>
-              <input type="file" id="hero-file-input" accept="image/*" style="display:none"
-                onchange="handleHeroFile(this.files[0])">
-            </div>
-
-            <!-- Preview (shown after upload) -->
-            <div id="hero-preview-wrap" class="hero-img-preview-wrap" style="display:none;">
-              <img id="hero-preview-img" src="" alt="Hero preview">
-              <button class="hero-img-remove-btn" onclick="clearHeroImage()">✕ Remove</button>
-              <div class="hero-img-preview-info">
-                <span id="hero-file-info">No file selected</span>
-                <span style="color:var(--green);font-weight:600;font-size:11px;">✅ Image ready — click Save Changes</span>
+            <div class="form-row full">
+              <div class="form-group">
+                <label>Hero Image URL (paste image link)</label>
+                <input type="text" id="si-hero-img" placeholder="https://... or leave empty for default">
+                <span class="form-hint">Paste a direct image URL. For best results use a 16:9 landscape image.</span>
               </div>
             </div>
-
-            <span class="form-hint" style="margin-top:10px;display:block;">Image is saved to browser storage. Click 💾 Save Changes after uploading.</span>
           </div>
-
-          <!-- Ticker -->
           <div class="form-section">
             <h3>📣 Ticker / Announcement Bar</h3>
             <div id="ticker-items-list" class="items-list" style="margin-bottom:14px;"></div>
@@ -271,68 +255,32 @@
           </div>
         </div>
 
-        <!-- ===== GALLERY ===== -->
+        <!-- GALLERY -->
         <div class="adm-panel" id="panel-gallery">
-
-          <!-- Upload Section -->
           <div class="form-section">
             <h3>🖼️ Upload Gallery Images</h3>
-            <p style="font-size:13px;color:var(--mid);margin-bottom:18px;">Upload multiple photos at once — drag &amp; drop or click to browse. Images are stored in browser storage.</p>
-
-            <!-- Drop Zone -->
-            <div id="gal-drop-zone"
-              class="img-drop-zone"
-              style="margin-bottom:18px;"
-              onclick="document.getElementById('gal-file-input').click()"
-              ondragover="event.preventDefault();this.classList.add('drag-over')"
-              ondragleave="this.classList.remove('drag-over')"
-              ondrop="handleGalDrop(event)">
-              <span class="img-drop-zone-icon">📂</span>
-              <div class="img-drop-zone-title">Click to choose images or drag &amp; drop here</div>
-              <div class="img-drop-zone-sub">JPG · PNG · WEBP · Multiple files allowed · Max 5 MB each</div>
-              <input type="file" id="gal-file-input" multiple accept="image/*"
-                style="display:none" onchange="handleGalFiles(this.files)">
+            <p style="font-size:13px;color:var(--mid);margin-bottom:18px;">Add images by URL. Each image will appear on the public gallery page.</p>
+            <div class="form-row">
+              <div class="form-group"><label>Image URL</label><input type="text" id="gal-url" placeholder="https://..."></div>
+              <div class="form-group"><label>Caption</label><input type="text" id="gal-cap" placeholder="e.g. Annual Sports Day 2026"></div>
             </div>
-
-            <!-- Pending Previews -->
-            <div id="gal-preview-wrap" style="display:none; margin-bottom:16px;">
-              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px;">
-                Selected — add caption &amp; category, then click Add to Gallery
+            <div class="form-row">
+              <div class="form-group"><label>Category</label>
+                <select id="gal-cat">
+                  <option>Campus</option><option>Academics</option><option>Sports</option>
+                  <option>Events</option><option>Sainik Training</option><option>Cultural</option>
+                </select>
               </div>
-              <div id="gal-preview-list" style="display:flex;flex-direction:column;gap:10px;"></div>
             </div>
-
-            <!-- Commit Button -->
-            <div id="gal-add-wrap" style="display:none;">
-              <button class="add-btn-upload" onclick="addGalleryItems()">
-                ✅ Add All to Gallery
-              </button>
-            </div>
+            <button class="add-btn add-btn-gold" onclick="addGalleryItem()">+ Add Image</button>
           </div>
-
-          <!-- Current Gallery Grid -->
           <div class="form-section">
-            <div class="gal-filter-bar">
-              <h3 style="margin-bottom:0;">Current Gallery (<span id="gal-count">0</span> images)</h3>
-              <select id="gal-filter-cat" class="gal-filter-select" onchange="renderGalleryPanel()">
-                <option value="all">All Categories</option>
-                <option>Campus</option>
-                <option>Academics</option>
-                <option>Sports</option>
-                <option>Events</option>
-                <option>Sainik Training</option>
-                <option>Cultural</option>
-              </select>
-            </div>
+            <h3>Current Gallery (<span id="gal-count">0</span> images)</h3>
             <div class="gallery-admin-grid" id="gal-admin-grid"></div>
-            <div id="gal-empty" style="display:none;text-align:center;padding:40px 20px;color:var(--light);font-size:13px;">
-              <div style="font-size:32px;margin-bottom:8px;">🖼️</div>
-              No images yet — upload some above!
-            </div>
           </div>
         </div>
 
-        <!-- ===== ACADEMICS ===== -->
+        <!-- ACADEMICS -->
         <div class="adm-panel" id="panel-academics">
           <div class="tabs">
             <div class="tab active" onclick="switchTab(this,'acad-levels')">Program Levels</div>
@@ -354,7 +302,7 @@
           </div>
         </div>
 
-        <!-- ===== FACILITIES ===== -->
+        <!-- FACILITIES -->
         <div class="adm-panel" id="panel-facilities">
           <div class="form-section">
             <h3>🏛️ Facilities</h3>
@@ -363,7 +311,7 @@
           </div>
         </div>
 
-        <!-- ===== ADMISSIONS ===== -->
+        <!-- ADMISSIONS -->
         <div class="adm-panel" id="panel-admissions">
           <div class="tabs">
             <div class="tab active" onclick="switchTab(this,'adm-general')">General</div>
@@ -376,6 +324,9 @@
               <div class="form-row">
                 <div class="form-group"><label>Session Label</label><input type="text" id="adm-session" placeholder="2026–27 Session"></div>
                 <div class="form-group"><label>Last Date to Apply</label><input type="text" id="adm-lastdate" placeholder="May 31, 2026"></div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group"><label>Admission Categories</label><span class="form-hint">Edit the three admission category cards below.</span></div>
               </div>
               <div class="items-list" id="adm-cats-list"></div>
             </div>
@@ -396,25 +347,25 @@
           </div>
         </div>
 
-        <!-- ===== NOTICES ===== -->
+        <!-- NOTICES -->
         <div class="adm-panel" id="panel-notices">
           <div class="form-section">
-            <h3>📢 School Notices &amp; Circulars</h3>
+            <h3>📢 School Notices & Circulars</h3>
             <div class="items-list" id="notices-admin-list"></div>
             <div style="margin-top:16px;"><button class="add-btn" onclick="openModal('notice')">+ Add Notice</button></div>
           </div>
         </div>
 
-        <!-- ===== NEWS ===== -->
+        <!-- NEWS -->
         <div class="adm-panel" id="panel-news">
           <div class="form-section">
-            <h3>📰 News &amp; Events</h3>
+            <h3>📰 News & Events</h3>
             <div class="items-list" id="news-admin-list"></div>
             <div style="margin-top:16px;"><button class="add-btn" onclick="openModal('news')">+ Add News Item</button></div>
           </div>
         </div>
 
-        <!-- ===== CONTACT INFO ===== -->
+        <!-- CONTACT INFO -->
         <div class="adm-panel" id="panel-contact-info">
           <div class="form-section">
             <h3>📞 Contact Information</h3>
@@ -432,7 +383,7 @@
           </div>
         </div>
 
-        <!-- ===== ENQUIRY INBOX ===== -->
+        <!-- ENQUIRY INBOX -->
         <div class="adm-panel" id="panel-enquiries">
           <div class="form-section" style="padding:0;overflow:hidden;">
             <div class="inbox-layout" id="enq-inbox-layout">
@@ -450,18 +401,15 @@
           </div>
         </div>
 
-        <!-- ===== APPLICATIONS ===== -->
+        <!-- APPLICATIONS PANEL -->
         <div class="adm-panel" id="panel-applications">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
             <div>
               <h3 style="font-family:'Cinzel',serif;font-size:16px;color:var(--navy);">Online Applications</h3>
-              <p style="font-size:12px;color:var(--light);margin-top:3px;">Review and manage admission applications.</p>
+              <p style="font-size:12px;color:var(--light);margin-top:3px;">Review and manage admission applications submitted online.</p>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-              <button onclick="exportApplicationsCSV()" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid #16a34a;background:#fff;color:#16a34a;cursor:pointer;font-family:'DM Sans',sans-serif;">📥 Export CSV</button>
-              <button onclick="printApplications()" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer;font-family:'DM Sans',sans-serif;">🖨️ Print</button>
-              <select id="app-filter" onchange="renderApplicationsPanel()"
-                style="border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12.5px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;outline:none;">
+            <div style="display:flex;gap:10px;">
+              <select id="app-filter" onchange="renderApplicationsPanel()" style="border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12.5px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;outline:none;">
                 <option value="all">All Applications</option>
                 <option value="Pending">Pending</option>
                 <option value="Under Review">Under Review</option>
@@ -473,7 +421,7 @@
           <div id="app-list"></div>
         </div>
 
-        <!-- ===== CHANGE PASSWORD ===== -->
+        <!-- CHANGE PASSWORD -->
         <div class="adm-panel" id="panel-change-password">
           <div class="form-section" style="max-width:440px;">
             <h3>🔑 Change Admin Password</h3>
@@ -483,7 +431,7 @@
             </div>
             <div class="form-group" style="margin-bottom:14px;">
               <label>New Password</label>
-              <input type="password" id="cp-new" placeholder="Minimum 8 characters">
+              <input type="password" id="cp-new" placeholder="Enter new password (min. 8 characters)">
             </div>
             <div class="form-group" style="margin-bottom:20px;">
               <label>Confirm New Password</label>
@@ -492,20 +440,18 @@
             <div id="cp-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;font-weight:600;margin-bottom:14px;"></div>
             <div id="cp-success" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:13px;color:#16a34a;font-weight:600;margin-bottom:14px;"></div>
             <button class="save-btn" onclick="changePassword()" style="padding:10px 24px;">Update Password</button>
-            <p style="font-size:11.5px;color:var(--light);margin-top:14px;">💡 Default: <strong>admin / admin123</strong> — change immediately after first login.</p>
+            <p style="font-size:11.5px;color:var(--light);margin-top:14px;">💡 Default credentials: <strong>admin / admin123</strong> — change these immediately after first login.</p>
           </div>
         </div>
 
-      </div><!-- /adm-content -->
+      </div>
     </main>
-  </div><!-- /admin-wrap -->
-</div><!-- /admin-view -->
+  </div>
+</div>
 
 <script src="../assets/js/main.js"></script>
 <script>
-// ================================================================
-// ADMIN LOGIN SYSTEM
-// ================================================================
+// ===== ADMIN LOGIN SYSTEM =====
 const ADMIN_CREDS_KEY = 'csv_admin_credentials';
 
 function getCredentials() {
@@ -513,6 +459,7 @@ function getCredentials() {
     const stored = localStorage.getItem(ADMIN_CREDS_KEY);
     if (stored) return JSON.parse(stored);
   } catch(e) {}
+  // Default credentials
   return { username: 'admin', password: 'admin123' };
 }
 
@@ -521,8 +468,8 @@ function isLoggedIn() {
 }
 
 function doLogin() {
-  const user  = document.getElementById('login-user').value.trim();
-  const pass  = document.getElementById('login-pass').value;
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
   const creds = getCredentials();
   const errEl = document.getElementById('login-error');
 
@@ -531,6 +478,7 @@ function doLogin() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('admin-view').style.display = 'block';
     errEl.classList.remove('show');
+    // Init admin
     setTimeout(() => {
       if (typeof renderAdmin === 'function') renderAdmin();
       if (typeof updateInboxBadges === 'function') updateInboxBadges();
@@ -539,6 +487,7 @@ function doLogin() {
     errEl.classList.add('show');
     document.getElementById('login-pass').value = '';
     document.getElementById('login-pass').focus();
+    // Shake effect
     const card = errEl.closest('.login-card');
     card.style.animation = 'shake 0.4s ease';
     setTimeout(() => card.style.animation = '', 400);
@@ -561,11 +510,23 @@ function changePassword() {
   const errEl    = document.getElementById('cp-error');
   const okEl     = document.getElementById('cp-success');
   const creds    = getCredentials();
+
   errEl.style.display = 'none';
   okEl.style.display  = 'none';
-  if (current !== creds.password) { errEl.textContent = '❌ Current password is incorrect.'; errEl.style.display = 'block'; return; }
-  if (newPass.length < 8)         { errEl.textContent = '❌ New password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
-  if (newPass !== confirm)        { errEl.textContent = '❌ Passwords do not match.'; errEl.style.display = 'block'; return; }
+
+  if (current !== creds.password) {
+    errEl.textContent = '❌ Current password is incorrect.';
+    errEl.style.display = 'block'; return;
+  }
+  if (newPass.length < 8) {
+    errEl.textContent = '❌ New password must be at least 8 characters.';
+    errEl.style.display = 'block'; return;
+  }
+  if (newPass !== confirm) {
+    errEl.textContent = '❌ New passwords do not match.';
+    errEl.style.display = 'block'; return;
+  }
+
   localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify({ username: creds.username, password: newPass }));
   okEl.textContent = '✅ Password updated successfully!';
   okEl.style.display = 'block';
@@ -574,65 +535,13 @@ function changePassword() {
   document.getElementById('cp-confirm').value = '';
 }
 
-function goPublic() { window.location.href = '../index.html'; }
-
-// ================================================================
-// EXPORT / PRINT APPLICATIONS
-// ================================================================
-function exportApplicationsCSV() {
-  const apps = D.applications || [];
-  if (!apps.length) { alert('No applications to export yet.'); return; }
-  const headers = ['Token','Student Name','DOB','Gender','Class','Type','Father','Mother','Phone','Email','Address','Status','Date'];
-  const rows = apps.map(a => [
-    a.token||'', a.student_name||a.sname||'', a.date_of_birth||a.dob||'',
-    a.gender||'', a.class_applying||a.cls||'', a.admission_type||a.type||'',
-    a.father_name||a.fname||'', a.mother_name||a.mname||'',
-    a.phone||'', a.email||'',
-    (a.address||'').replace(/,/g,' '), a.status||'Pending', a.date||a.submitted_at||''
-  ].map(v => `"${v}"`).join(','));
-  const csv  = [headers.join(','), ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = `CSV_Applications_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('📥 Applications exported!', 'success');
+// Override goPublic to just navigate to site (no toggle needed)
+function goPublic() {
+  window.location.href = '../index.html';
 }
 
-function printApplications() {
-  const apps = D.applications || [];
-  if (!apps.length) { alert('No applications to print yet.'); return; }
-  const rows = apps.map(a => `
-    <tr>
-      <td>${a.token||'–'}</td>
-      <td>${a.student_name||a.sname||'–'}</td>
-      <td>${a.class_applying||a.cls||'–'}</td>
-      <td>${a.admission_type||a.type||'–'}</td>
-      <td>${a.phone||'–'}</td>
-      <td style="color:${(a.status==='Shortlisted')?'#16a34a':(a.status==='Rejected')?'#dc2626':'#b8860b'};font-weight:700;">${a.status||'Pending'}</td>
-    </tr>`).join('');
-  const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>Applications — Colonel's Sainik Vidyalaya</title>
-  <style>body{font-family:sans-serif;padding:24px;}h1{color:#0f2057;font-size:20px;}
-  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px;}
-  th{background:#0f2057;color:#fff;padding:10px;text-align:left;}
-  td{padding:8px 10px;border-bottom:1px solid #eee;}
-  tr:nth-child(even){background:#f9f8f5;}
-  @media print{button{display:none!important}}</style></head>
-  <body><h1>Colonel's Sainik Vidyalaya — Applications</h1>
-  <p style="color:#666;font-size:12px;">Printed on ${new Date().toLocaleDateString('en-IN')}</p>
-  <button onclick="window.print()" style="margin-bottom:12px;padding:8px 20px;background:#0f2057;color:#fff;border:none;border-radius:6px;cursor:pointer;">🖨️ Print</button>
-  <table><thead><tr><th>Token</th><th>Name</th><th>Class</th><th>Type</th><th>Phone</th><th>Status</th></tr></thead>
-  <tbody>${rows}</tbody></table></body></html>`);
-  win.document.close();
-}
-
-// ================================================================
-// INIT — check session on page load
-// ================================================================
-document.addEventListener('DOMContentLoaded', function () {
+// Check on page load
+document.addEventListener('DOMContentLoaded', function() {
   if (isLoggedIn()) {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('admin-view').style.display = 'block';
@@ -640,6 +549,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof updateInboxBadges === 'function') updateInboxBadges();
   }
 });
+
+// Shake animation
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-8px);}40%,80%{transform:translateX(8px);}}`;
+document.head.appendChild(shakeStyle);
 </script>
 </body>
 </html>
