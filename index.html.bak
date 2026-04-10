@@ -99,6 +99,77 @@
 
     <!-- ===== PAGE: HOME ===== -->
     <div id="pp-home" class="pp active">
+
+      <!-- ===== HERO SLIDER ===== -->
+      <section class="hero-slider" id="hero-slider" aria-label="School highlights slideshow">
+        <!-- Slides -->
+        <div class="hs-slide active" data-slide="0">
+          <div class="hs-bg" style="background-image:url('/assets/images/school_image.png')"></div>
+          <div class="hs-overlay"></div>
+          <div class="hs-content">
+            <span class="hs-pill">Welcome to Colonel's Sainik Vidyalaya</span>
+            <h2 class="hs-heading">
+              <span class="hs-line1">Cradle For</span>
+              <span class="hs-line2"><em>Excellence</em></span>
+            </h2>
+            <p class="hs-sub">A premier CBSE Sainik school shaping disciplined leaders of tomorrow.</p>
+            <div class="hs-btns">
+              <button class="hs-btn-primary" onclick="goPage('admissions')">Apply for Admission →</button>
+              <button class="hs-btn-ghost" onclick="goPage('about')">Discover More</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="hs-slide" data-slide="1">
+          <div class="hs-bg" style="background-image:url('/assets/images/school_image.png')"></div>
+          <div class="hs-overlay" style="background:linear-gradient(120deg,rgba(15,32,87,0.88) 0%,rgba(184,134,11,0.45) 100%)"></div>
+          <div class="hs-content">
+            <span class="hs-pill">Sainik Discipline · CBSE Curriculum</span>
+            <h2 class="hs-heading">
+              <span class="hs-line1">Nurturing</span>
+              <span class="hs-line2"><em>Future Leaders</em></span>
+            </h2>
+            <p class="hs-sub">Blending military values with modern education — from Nursery to Class VIII.</p>
+            <div class="hs-btns">
+              <button class="hs-btn-primary" onclick="goPage('academics')">Explore Academics →</button>
+              <button class="hs-btn-ghost" onclick="goPage('facilities')">Our Facilities</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="hs-slide" data-slide="2">
+          <div class="hs-bg" style="background-image:url('/assets/images/school_image_1.jpeg')"></div>
+          <div class="hs-overlay" style="background:linear-gradient(120deg,rgba(89, 129, 248, 0.769) 0%,rgba(255, 240, 174, 0.2) 100%)"></div>
+          <div class="hs-content">
+            <span class="hs-pill">Admissions Open · 2026–27 Session</span>
+            <h2 class="hs-heading">
+              <span class="hs-line1">Madhepura's</span>
+              <span class="hs-line2"><em>Finest School</em></span>
+            </h2>
+            <p class="hs-sub">Day Scholar · Day Boarder · Full Boarder programs for your child's bright future.</p>
+            <div class="hs-btns">
+              <button class="hs-btn-primary" onclick="goPage('apply')">🎓 Apply Online →</button>
+              <button class="hs-btn-ghost" onclick="goPage('contact')">Contact Us</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <button class="hs-arrow hs-prev" onclick="sliderPrev()" aria-label="Previous slide">&#8592;</button>
+        <button class="hs-arrow hs-next" onclick="sliderNext()" aria-label="Next slide">&#8594;</button>
+
+        <!-- Dots -->
+        <div class="hs-dots" id="hs-dots">
+          <button class="hs-dot active" onclick="sliderGo(0)" aria-label="Slide 1"></button>
+          <button class="hs-dot" onclick="sliderGo(1)" aria-label="Slide 2"></button>
+          <button class="hs-dot" onclick="sliderGo(2)" aria-label="Slide 3"></button>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="hs-progress"><div class="hs-progress-bar" id="hs-progress-bar"></div></div>
+      </section>
+      <!-- ===== END HERO SLIDER ===== -->
+
       <section class="hero">
         <div class="hero-l">
           <div class="hero-pill">CBSE Affiliated · Madhepura, Bihar</div>
@@ -129,8 +200,8 @@
           <div style="position:relative;">
             <div class="hero-float"><b>2026</b>Batch Open</div>
             <div class="hero-img" id="hero-img-wrap">
-              <img src="/assets/images/school_image.jpeg" alt="Campus"
-                style="width:100%;display:block;object-fit:cover;max-height:660px;">
+              <img src="/assets/images/school_image.png" alt="Campus"
+                style="width:100%;display:block;object-fit:cover;max-height:360px;">
             </div>
             <div class="hero-badge">
               <div class="badge-ico">🏛️</div>
@@ -306,8 +377,7 @@
           <div class="principal-wrap">
             <div class="principal-img-side reveal">
               <div class="principal-img-frame">
-                <span>👩‍💼</span>
-                Founder's Photo
+                <img src="assets/images/founder.jpeg" alt="Founder's Photo">
               </div>
               <div class="principal-badge-float">
                 <strong id="founder-badge-name">Dr. Anamika Kumar</strong>
@@ -325,8 +395,8 @@
                 leader — every student here is family.</p>
               <div class="principal-sig">
                 <div class="principal-name" id="founder-sig-name">Dr. Anamika Kumar</div>
-                <div class="principal-title">Founder &amp; Director - Colonel's Sainik Vidyalaya, Madhepura</div>
-                <div style="font-size:11.5px;color:var(--light);margin-top:3px;"></div>
+                <div class="principal-title">Founder — Colonel's Sainik Vidyalaya, Madhepura</div>
+                <div style="font-size:11.5px;color:var(--light);margin-top:3px;">W/o Col. Shishir Kumar</div>
               </div>
             </div>
           </div>
@@ -573,8 +643,7 @@
             </div>
             <div class="about-intro-img reveal reveal-delay-2">
               <div class="about-img-frame">
-                <span>🏛️</span>
-                Campus Photo
+                <img src="assets/images/school_image.png" alt="Campus's Photo">
               </div>
               <div class="about-img-badge">
                 <strong id="abt-est-badge">2026</strong>
@@ -644,7 +713,7 @@
             <div class="leader-card reveal reveal-delay-2">
               <div class="leader-avatar">👨‍💼</div>
               <div class="leader-info">
-                <h3>Col. Shishir Kumar (Retd.)</h3>
+                <h3>Col. Shishir Kumar </h3>
                 <span class="role">Patron & Advisor</span>
                 <p>A decorated officer of the Indian Army whose values of discipline, integrity, and service to nation
                   form the philosophical bedrock of the school's ethos. His military expertise shapes every aspect of

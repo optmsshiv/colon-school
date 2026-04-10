@@ -31,7 +31,7 @@ CREATE TABLE `admin_users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Default admin: username=admin, password=admin123 (CHANGE THIS!)
+-- Default admin: username=admin, password=admin@123 (CHANGE THIS!)
 INSERT INTO `admin_users` (`username`, `password_hash`, `display_name`)
 VALUES ('admin', '$2y$12$YourHashHere', 'School Administrator');
 -- NOTE: Replace the hash above by running: php -r "echo password_hash('admin123', PASSWORD_BCRYPT);"
