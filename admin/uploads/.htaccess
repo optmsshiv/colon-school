@@ -1,0 +1,9 @@
+# ── Security: Deny PHP execution in uploads directory ──
+# Place this file at: admin/uploads/.htaccess
+
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|cgi|sh|exe)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+Options -Indexes
