@@ -1,57 +1,98 @@
 <?php
 /**
- * Public Gallery API — Colonel's Sainik Vidyalaya
- * File: gallery-api.php  (place in site root, same level as index.html)
+ * Gallery API — Colonel's Sainik Vidyalaya
+ * Public endpoint: returns active gallery images as JSON.
+ * Place this file in your website root (same level as index.html).
  *
- * Returns active gallery images as JSON for the public website.
- * The frontend's main.js calls this to load real gallery data from DB.
+ * Usage:
+ *   GET gallery-api.php           → all active images
+ *   GET gallery-api.php?cat=Sports → filter by category
  *
- * Usage: fetch('/gallery-api.php')  or  fetch('/gallery-api.php?cat=Sports')
+ * This is called by main.js → loadGalleryFromDB()
  */
 
-require_once __DIR__ . '/admin/includes/config.php';
-
 header('Content-Type: application/json');
-header('Cache-Control: public, max-age=300'); // 5 min cache
+header('Access-Control-Allow-Origin: *');
 
-$pdo    = getDB();
-$cat    = trim($_GET['cat'] ?? '');
-$limit  = min(200, max(1, (int)($_GET['limit'] ?? 200)));
+// ── Config ─────────────────────────────────────────────────────────
+// Adjust path to your admin config file.
+// Typical structure: /public_html/index.html  → /public_html/admin/includes/config.php
+$configPath = __DIR__ . '/admin/includes/config.php';
 
-$where  = 'is_active = 1';
-$params = [];
-if ($cat) {
-    $where .= ' AND category = ?';
-    $params[] = $cat;
+if (!file_exists($configPath)) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Config not found at: ' . $configPath]);
+    exit;
 }
 
-$stmt = $pdo->prepare("
-    SELECT id, filename, original_name, caption, category, sort_order, uploaded_at
-    FROM gallery_images
-    WHERE $where
-    ORDER BY sort_order ASC, id DESC
-    LIMIT $limit
-");
-$stmt->execute($params);
-$rows = $stmt->fetchAll();
+require_once $configPath;
 
-$baseUrl = '/admin/uploads/gallery/';
+try {
+    $pdo = getDB();
 
-$images = array_map(function($row) use ($baseUrl) {
-    $thumbFile = 'thumbs/' . $row['filename'];
-    $thumbExists = file_exists(UPLOAD_DIR . $thumbFile);
-    return [
-        'id'        => (int)$row['id'],
-        'url'       => $baseUrl . $row['filename'],
-        'thumb'     => $thumbExists ? $baseUrl . $thumbFile : $baseUrl . $row['filename'],
-        'caption'   => $row['caption'] ?: $row['original_name'],
-        'cat'       => $row['category'],
-        'date'      => $row['uploaded_at'],
-    ];
-}, $rows);
+    $cat    = trim($_GET['cat'] ?? '');
+    $limit  = min((int)($_GET['limit'] ?? 500), 500); // max 500
 
-echo json_encode([
-    'success' => true,
-    'count'   => count($images),
-    'images'  => $images,
-], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $where  = 'is_active = 1';
+    $params = [];
+
+    if ($cat && $cat !== 'all') {
+        $where  .= ' AND category = ?';
+        $params[] = $cat;
+    }
+
+    $sql = "SELECT
+                id,
+                filename,
+                original_name,
+                caption,
+                description,
+                category,
+                sort_order,
+                file_size,
+                uploaded_at
+            FROM gallery_images
+            WHERE $where
+            ORDER BY sort_order ASC, id DESC
+            LIMIT $limit";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Build image URLs
+    $uploadUrl = defined('UPLOAD_URL') ? UPLOAD_URL : '/uploads/gallery/';
+    $uploadDir = defined('UPLOAD_DIR') ? UPLOAD_DIR : ($_SERVER['DOCUMENT_ROOT'] . '/uploads/gallery/');
+
+    $images = array_map(function($row) use ($uploadUrl, $uploadDir) {
+        $thumb = $uploadUrl . 'thumbs/' . $row['filename'];
+        $full  = $uploadUrl . $row['filename'];
+        // Check if thumb physically exists; fall back to full if not
+        $hasThumb = file_exists($uploadDir . 'thumbs/' . $row['filename']);
+        return [
+            'id'           => (int)$row['id'],
+            'url'          => $full,
+            'thumb'        => $hasThumb ? $thumb : $full,
+            'caption'      => $row['caption'] ?: $row['original_name'],
+            'description'  => $row['description'] ?? '',
+            'category'     => $row['category'],
+            'sort_order'   => (int)$row['sort_order'],
+            'uploaded_at'  => $row['uploaded_at'],
+        ];
+    }, $rows);
+
+    // Category counts
+    $catStmt = $pdo->query("SELECT category, COUNT(*) as cnt FROM gallery_images WHERE is_active=1 GROUP BY category ORDER BY cnt DESC");
+    $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode([
+        'success'    => true,
+        'total'      => count($images),
+        'images'     => $images,
+        'categories' => $categories,
+    ]);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+}

@@ -39,9 +39,6 @@ $images = $listStmt->fetchAll();
 // ── All categories for filter dropdown ──────────────────
 $allCats = $pdo->query("SELECT DISTINCT category FROM gallery_images ORDER BY category")->fetchAll(PDO::FETCH_COLUMN);
 
-// ── Recent uploads for dashboard ────────────────────────
-$recentImages = $pdo->query("SELECT * FROM gallery_images ORDER BY uploaded_at DESC, id DESC LIMIT 8")->fetchAll();
-
 // ── Category icons ─────────────────────────────────────
 $catIcons = ['Campus'=>'🏫','Classrooms'=>'📚','Sports'=>'🏃','Events'=>'🎉','Parade'=>'🎖️','Hostel'=>'🏠','Lab'=>'🔬','Arts'=>'🎨','Achievements'=>'🏆','Others'=>'📷'];
 $catIcon  = fn($c) => $catIcons[$c] ?? '🖼️';
@@ -534,68 +531,23 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
     </a>
   </div>
 
-  <!-- Category breakdown as cards with count -->
+  <!-- Category breakdown -->
   <?php if(!empty($cats)): ?>
   <div class="section-card">
-    <div class="section-title">🏷️ Category Overview
-      <span style="font-size:13px;font-weight:400;color:var(--muted);margin-left:auto;"><?= count($cats) ?> active categories</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;">
-      <?php
-      $catColors = ['Campus'=>'#0f2057','Classrooms'=>'#1a3a96','Sports'=>'#16a34a','Events'=>'#b8860b','Parade'=>'#7c3aed','Hostel'=>'#0369a1','Lab'=>'#0891b2','Arts'=>'#db2777','Achievements'=>'#d97706','Others'=>'#64748b'];
-      foreach($cats as $c):
+    <div class="section-title">📊 Category Breakdown</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+      <?php foreach($cats as $c):
         $pct = $active > 0 ? round($c['cnt']/$active*100) : 0;
-        $color = $catColors[$c['category']] ?? '#0f2057';
       ?>
-      <div onclick="window.location.href='?view=manage&cat=<?= urlencode($c['category']) ?>'"
-        style="padding:18px 16px;background:var(--white);border-radius:12px;border:1.5px solid var(--border);cursor:pointer;transition:.2s;position:relative;overflow:hidden;"
-        onmouseover="this.style.borderColor='<?= $color ?>'; this.style.boxShadow='0 6px 20px rgba(0,0,0,.1)'; this.style.transform='translateY(-2px)';"
-        onmouseout="this.style.borderColor='var(--border)'; this.style.boxShadow='none'; this.style.transform='none';">
-        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:<?= $color ?>;border-radius:12px 12px 0 0;"></div>
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:26px;"><?= $catIcon($c['category']) ?></span>
-          <span style="font-size:22px;font-weight:800;color:<?= $color ?>;"><?= $c['cnt'] ?></span>
+      <div style="padding:14px 16px;background:#f8faff;border-radius:10px;border:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:14px;font-weight:600;color:var(--navy);"><?= $catIcon($c['category']) ?> <?= e($c['category']) ?></span>
+          <span style="font-size:13px;font-weight:800;color:var(--navy-mid);"><?= $c['cnt'] ?></span>
         </div>
-        <div style="font-size:13.5px;font-weight:700;color:var(--navy);"><?= e($c['category']) ?></div>
-        <div style="height:5px;background:#e2e8f0;border-radius:10px;overflow:hidden;margin-top:8px;">
-          <div style="height:100%;width:<?= $pct ?>%;background:<?= $color ?>;border-radius:10px;transition:width .6s;"></div>
+        <div style="height:6px;background:#e2e8f0;border-radius:10px;overflow:hidden;">
+          <div style="height:100%;width:<?= $pct ?>%;background:linear-gradient(90deg,var(--navy),var(--navy-mid));border-radius:10px;"></div>
         </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:5px;"><?= $pct ?>% of visible · click to view</div>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <!-- Recent Uploads Preview -->
-  <?php if(!empty($recentImages)): ?>
-  <div class="section-card">
-    <div class="section-title">🕓 Recently Uploaded
-      <a href="?view=manage" style="margin-left:auto;font-size:13px;font-weight:600;color:var(--navy-mid);text-decoration:none;">View All →</a>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">
-      <?php foreach($recentImages as $ri):
-        $riUrl = UPLOAD_URL . $ri['filename'];
-        $riThumb = UPLOAD_URL . 'thumbs/' . $ri['filename'];
-        $riDisplay = file_exists(UPLOAD_DIR . 'thumbs/' . $ri['filename']) ? $riThumb : $riUrl;
-      ?>
-      <div style="border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1);background:#f1f5f9;position:relative;cursor:pointer;"
-           onclick="window.open('<?= e($riUrl) ?>','_blank')"
-           title="<?= e($ri['caption'] ?: $ri['original_name']) ?>">
-        <img src="<?= e($riDisplay) ?>"
-             alt="<?= e($ri['caption']) ?>"
-             style="width:100%;height:110px;object-fit:cover;display:block;"
-             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'110\'%3E%3Crect width=\'150\' height=\'110\' fill=\'%23f1f5f9\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.35em\' font-size=\'28\' fill=\'%23cbd5e1\'%3E🖼️%3C/text%3E%3C/svg%3E'">
-        <div style="padding:7px 9px;">
-          <div style="font-size:11.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><?= e($ri['caption'] ?: $ri['original_name']) ?></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px;">
-            <span style="font-size:10.5px;color:var(--muted);"><?= e($catIcon($ri['category']).' '.$ri['category']) ?></span>
-            <span style="font-size:10px;color:var(--muted);"><?= date('d M', strtotime($ri['uploaded_at'])) ?></span>
-          </div>
-        </div>
-        <?php if(!$ri['is_active']): ?>
-        <div style="position:absolute;top:5px;left:5px;background:rgba(217,119,6,.9);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;">Hidden</div>
-        <?php endif; ?>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;"><?= $pct ?>% of visible</div>
       </div>
       <?php endforeach; ?>
     </div>
@@ -648,13 +600,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
           <label>Sort Order</label>
           <input type="number" id="up-sort" value="0" min="0" max="9999">
           <small>Lower = appears first in gallery</small>
-        </div>
-      </div>
-      <div class="form-row-2" style="margin-bottom:16px;">
-        <div class="fg" style="grid-column:1/-1;">
-          <label>Description <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
-          <textarea id="up-description" rows="2" placeholder="Add a short description for these images…" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;outline:none;transition:.18s;font-family:inherit;resize:vertical;" maxlength="500"></textarea>
-          <small>Brief description shown in the gallery lightbox · Max 500 characters</small>
         </div>
       </div>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
@@ -878,10 +823,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
         <label>Caption / Title</label>
         <input type="text" id="edit-caption" maxlength="200">
       </div>
-      <div class="fg" style="margin-bottom:14px;">
-        <label>Description <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
-        <textarea id="edit-description" rows="2" maxlength="500" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;outline:none;transition:.18s;font-family:inherit;resize:vertical;"></textarea>
-      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
         <div class="fg">
           <label>Category</label>
@@ -1022,8 +963,6 @@ function clearPreview() {
   selectedFiles = [];
   previewGrid.innerHTML = '';
   fileInput.value = '';
-  const desc = document.getElementById('up-description');
-  if(desc) desc.value = '';
   updateCount();
 }
 
@@ -1042,7 +981,6 @@ async function startUpload() {
   const caption  = document.getElementById('up-caption').value.trim();
   const category = document.getElementById('up-category').value;
   const sort     = document.getElementById('up-sort').value;
-  const description = document.getElementById('up-description').value.trim();
 
   const progressWrap = document.getElementById('upload-progress');
   const progressFill = document.getElementById('progress-fill');
@@ -1057,7 +995,6 @@ async function startUpload() {
     fd.append('caption', caption);
     fd.append('category', category);
     fd.append('sort_order', sort);
-    fd.append('description', description);
     fd.append('action', 'upload');
 
     try {
@@ -1149,7 +1086,6 @@ async function bulkAction(action) {
 function openEdit(id, img) {
   document.getElementById('edit-id').value       = id;
   document.getElementById('edit-caption').value  = img.caption || '';
-  document.getElementById('edit-description').value = img.description || '';
   document.getElementById('edit-sort').value     = img.sort_order || 0;
   document.getElementById('edit-status').value   = img.is_active;
   document.getElementById('edit-category').value = img.category || 'Campus';
@@ -1169,7 +1105,6 @@ async function saveEdit() {
   fd.append('action','edit');
   fd.append('id',      document.getElementById('edit-id').value);
   fd.append('caption', document.getElementById('edit-caption').value);
-  fd.append('description', document.getElementById('edit-description').value);
   fd.append('category',document.getElementById('edit-category').value);
   fd.append('sort_order',document.getElementById('edit-sort').value);
   fd.append('is_active', document.getElementById('edit-status').value);

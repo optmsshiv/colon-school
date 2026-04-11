@@ -70,9 +70,10 @@ if ($action === 'upload') {
     }
 
     // Sanitise meta fields
-    $caption   = trim(substr($_POST['caption']    ?? '', 0, 255));
-    $category  = trim($_POST['category']  ?? 'Campus');
-    $sortOrder = max(0, min(9999, (int)($_POST['sort_order'] ?? 0)));
+    $caption     = trim(substr($_POST['caption']     ?? '', 0, 255));
+    $description = trim(substr($_POST['description'] ?? '', 0, 500));
+    $category    = trim($_POST['category']  ?? 'Campus');
+    $sortOrder   = max(0, min(9999, (int)($_POST['sort_order'] ?? 0)));
 
     // Fallback caption → original filename without extension
     if ($caption === '') {
@@ -86,10 +87,10 @@ if ($action === 'upload') {
     if (!in_array($category, $validCats, true)) $category = 'Campus';
 
     $stmt = $pdo->prepare('
-        INSERT INTO gallery_images (filename, original_name, caption, category, sort_order, file_size, mime_type)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO gallery_images (filename, original_name, caption, description, category, sort_order, file_size, mime_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ');
-    $stmt->execute([$newName, $origName, $caption, $category, $sortOrder, $size, $mimeType]);
+    $stmt->execute([$newName, $origName, $caption, $description, $category, $sortOrder, $size, $mimeType]);
 
     echo json_encode(['success' => true, 'message' => 'Image uploaded successfully.', 'filename' => $newName]);
     exit;
@@ -99,21 +100,22 @@ if ($action === 'upload') {
 // ACTION: edit
 // ─────────────────────────────────────────────────────────
 if ($action === 'edit') {
-    $id        = (int)($_POST['id'] ?? 0);
-    $caption   = trim(substr($_POST['caption']    ?? '', 0, 255));
-    $category  = trim($_POST['category']  ?? 'Campus');
-    $sortOrder = max(0, min(9999, (int)($_POST['sort_order'] ?? 0)));
-    $isActive  = (int)($_POST['is_active'] ?? 1) ? 1 : 0;
+    $id          = (int)($_POST['id'] ?? 0);
+    $caption     = trim(substr($_POST['caption']     ?? '', 0, 255));
+    $description = trim(substr($_POST['description'] ?? '', 0, 500));
+    $category    = trim($_POST['category']  ?? 'Campus');
+    $sortOrder   = max(0, min(9999, (int)($_POST['sort_order'] ?? 0)));
+    $isActive    = (int)($_POST['is_active'] ?? 1) ? 1 : 0;
 
     $validCats = ['Campus','Classrooms','Sports','Events','Parade','Hostel','Lab','Arts','Achievements','Others'];
     if (!in_array($category, $validCats, true)) $category = 'Campus';
 
     $stmt = $pdo->prepare('
         UPDATE gallery_images
-        SET caption=?, category=?, sort_order=?, is_active=?
+        SET caption=?, description=?, category=?, sort_order=?, is_active=?
         WHERE id=?
     ');
-    $stmt->execute([$caption, $category, $sortOrder, $isActive, $id]);
+    $stmt->execute([$caption, $description, $category, $sortOrder, $isActive, $id]);
 
     echo json_encode(['success' => true, 'message' => 'Updated successfully.']);
     exit;
