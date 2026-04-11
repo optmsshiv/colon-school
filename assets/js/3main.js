@@ -1382,73 +1382,214 @@ function deleteApplication(i) {
 }
 
 // ===================== HERO SLIDER =====================
+// ═══════════════════════════════════════════════════════
+// CINEMATIC HERO CONTROLLER
+// Ken Burns image slider + video-ready + particle shimmer
+// ═══════════════════════════════════════════════════════
 (function () {
-  let current = 0;
-  const total = 3;
-  let autoTimer = null;
-  let progressTimer = null;
-  const DURATION = 5000;
+  const DURATION   = 6000;   // ms per slide
+  const TOTAL      = 3;
+  let   current    = 0;
+  let   autoTimer  = null;
+  let   videoMode  = false;
+  let   muted      = true;
 
-  function getSlides() { return document.querySelectorAll('.hs-slide'); }
-  function getDots() { return document.querySelectorAll('.hs-dot'); }
-  function getBar() { return document.getElementById('hs-progress-bar'); }
-
-  function goTo(idx) {
-    const slides = getSlides();
-    const dots = getDots();
-    if (!slides.length) return;
-    slides[current].classList.remove('active');
-    dots[current] && dots[current].classList.remove('active');
-    current = (idx + total) % total;
-    slides[current].classList.add('active');
-    dots[current] && dots[current].classList.add('active');
-    resetProgress();
+  // ── CSS duration var for ring-progress animation ──
+  function setDurVar() {
+    const nav = document.getElementById('cin-nav');
+    if (nav) nav.style.setProperty('--cin-dur', DURATION + 'ms');
   }
 
-  function resetProgress() {
-    const bar = getBar();
-    if (!bar) return;
-    bar.style.transition = 'none';
-    bar.style.width = '0%';
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        bar.style.transition = `width ${DURATION}ms linear`;
-        bar.style.width = '100%';
-      });
+  // ── Ken Burns: restart animation on active slide ──
+  function restartKB(slideEl) {
+    const kb = slideEl.querySelector('.cin-kb');
+    if (!kb) return;
+    kb.classList.remove('kb-animate');
+    // Force reflow
+    void kb.offsetWidth;
+    kb.classList.add('kb-animate');
+  }
+
+  // ── Go to slide ──
+  function goTo(idx) {
+    const slides   = document.querySelectorAll('.cin-slide');
+    const contents = document.querySelectorAll('.cin-content');
+    const dots     = document.querySelectorAll('.cin-dot');
+    if (!slides.length) return;
+
+    // Deactivate current
+    slides[current].classList.remove('active');
+    contents[current] && contents[current].classList.remove('active');
+    dots[current] && dots[current].classList.remove('active');
+
+    current = (idx + TOTAL) % TOTAL;
+
+    // Activate new
+    slides[current].classList.add('active');
+    contents[current] && contents[current].classList.add('active');
+
+    // Restart KB animation on new slide (skip for video mode)
+    if (!videoMode) restartKB(slides[current]);
+
+    // Dots: reset and restart ring animation
+    dots.forEach((d, i) => {
+      d.classList.remove('active');
+      // Force animation restart
+      const fill = d.querySelector('.cin-dot-fill');
+      if (fill) { fill.style.animation = 'none'; void fill.offsetWidth; fill.style.animation = ''; }
     });
+    dots[current] && dots[current].classList.add('active');
+
+    // Counter
+    const cur = document.getElementById('cin-counter-cur');
+    if (cur) cur.textContent = String(current + 1).padStart(2, '0');
   }
 
   function startAuto() {
-    stopAuto();
-    autoTimer = setInterval(() => goTo(current + 1), DURATION);
-    resetProgress();
-  }
-
-  function stopAuto() {
     clearInterval(autoTimer);
+    autoTimer = setInterval(() => goTo(current + 1), DURATION);
+  }
+  function stopAuto() { clearInterval(autoTimer); }
+
+  // Public API
+  window.cinNext = function () { goTo(current + 1); stopAuto(); startAuto(); };
+  window.cinPrev = function () { goTo(current - 1); stopAuto(); startAuto(); };
+  window.cinGo   = function (i) { goTo(i);          stopAuto(); startAuto(); };
+
+  // ── Video mode ──
+  function initVideo(hero) {
+    const wrap   = document.getElementById('cin-video-wrap');
+    const video  = document.getElementById('cin-video');
+    const muteBtn = document.getElementById('cin-mute-btn');
+    const slides = document.getElementById('cin-slides');
+
+    if (!wrap || !video) return;
+
+    // Inject sources
+    const mp4  = hero.dataset.videoSrcMp4;
+    const webm = hero.dataset.videoSrcWebm;
+    if (webm) { const s = document.createElement('source'); s.src = webm; s.type = 'video/webm'; video.appendChild(s); }
+    if (mp4)  { const s = document.createElement('source'); s.src = mp4;  s.type = 'video/mp4';  video.appendChild(s); }
+
+    video.load();
+    video.addEventListener('canplay', () => {
+      wrap.classList.add('active');
+      if (slides) slides.style.display = 'none'; // hide KB slides
+      if (muteBtn) muteBtn.style.display = 'flex';
+      videoMode = true;
+      // Video replaces auto-slide for BG; keep content slides cycling
+      startAuto();
+    }, { once: true });
+
+    video.addEventListener('error', () => {
+      // Video failed — fall back to KB slides silently
+      console.warn('[CinHero] Video failed, using Ken Burns fallback');
+      wrap.style.display = 'none';
+    });
   }
 
-  window.sliderNext = function () { goTo(current + 1); stopAuto(); startAuto(); };
-  window.sliderPrev = function () { goTo(current - 1); stopAuto(); startAuto(); };
-  window.sliderGo = function (idx) { goTo(idx); stopAuto(); startAuto(); };
+  // ── Mute toggle ──
+  window.cinToggleMute = function () {
+    const video   = document.getElementById('cin-video');
+    const muteBtn = document.getElementById('cin-mute-btn');
+    if (!video) return;
+    muted = !muted;
+    video.muted = muted;
+    if (muteBtn) muteBtn.textContent = muted ? '🔇' : '🔊';
+  };
 
-  // Pause on hover
-  document.addEventListener('DOMContentLoaded', function () {
-    const slider = document.getElementById('hero-slider');
-    if (slider) {
-      slider.addEventListener('mouseenter', stopAuto);
-      slider.addEventListener('mouseleave', startAuto);
-      // Touch swipe support
-      let tx = 0;
-      slider.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
-      slider.addEventListener('touchend', e => {
-        const dx = e.changedTouches[0].clientX - tx;
-        if (Math.abs(dx) > 40) { dx < 0 ? sliderNext() : sliderPrev(); }
-      }, { passive: true });
-      startAuto();
+  // ── Particle shimmer ──
+  function initParticles() {
+    const canvas = document.getElementById('cin-particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width  = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
     }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Spawn particles
+    for (let i = 0; i < 55; i++) {
+      particles.push({
+        x: Math.random() * 1200,
+        y: Math.random() * 800,
+        r: Math.random() * 1.6 + 0.3,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -Math.random() * 0.5 - 0.15,
+        alpha: Math.random() * 0.6 + 0.1,
+        pulse: Math.random() * Math.PI * 2,
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const t = Date.now() * 0.001;
+      particles.forEach(p => {
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.pulse += 0.02;
+        if (p.y < -5)  p.y = H + 5;
+        if (p.x < -5)  p.x = W + 5;
+        if (p.x > W+5) p.x = -5;
+
+        const a = p.alpha * (0.55 + 0.45 * Math.sin(p.pulse));
+        ctx.beginPath();
+        ctx.arc((p.x / 1200) * W, (p.y / 800) * H, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(251,191,36,${a})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // ── Touch swipe ──
+  function initSwipe(hero) {
+    let tx = 0;
+    hero.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+    hero.addEventListener('touchend',   e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 44) { dx < 0 ? cinNext() : cinPrev(); }
+    }, { passive: true });
+  }
+
+  // ── Init on DOM ready ──
+  document.addEventListener('DOMContentLoaded', function () {
+    const hero = document.getElementById('cin-hero');
+    if (!hero) return;
+
+    setDurVar();
+
+    // Respect prefers-reduced-motion
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+    // Skip video + particles if reduced motion
+    if (!reducedMotion) {
+      // Video mode?
+      if (hero.dataset.video === 'true') {
+        initVideo(hero);
+      } else {
+        // Start KB on first slide immediately
+        const firstSlide = hero.querySelector('.cin-slide.active');
+        if (firstSlide) restartKB(firstSlide);
+      }
+      initParticles();
+    }
+
+    initSwipe(hero);
+
+    // Pause on hover
+    hero.addEventListener('mouseenter', stopAuto);
+    hero.addEventListener('mouseleave', startAuto);
+
+    startAuto();
   });
 })();
+
 
 // ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', function () {
@@ -1468,3 +1609,171 @@ document.addEventListener('DOMContentLoaded', function () {
   initReveal();
   initChat();
 });
+/* =========================================================
+   GALLERY PAGE — ENHANCED JS
+   ========================================================= */
+
+// ---- Photo slot definitions (18 pre-defined + 18 more = 36 total across 12 categories) ----
+const GAL_SLOTS = [
+  // Events (3)
+  { title: 'Annual Day Celebration', cat: 'Events', icon: '🎉', grad: 'linear-gradient(135deg,#1a3a96,#4a6ad4)' },
+  { title: 'Independence Day Parade', cat: 'Events', icon: '🇮🇳', grad: 'linear-gradient(135deg,#0f2057,#1a3a96)' },
+  { title: 'Founder\'s Day Ceremony', cat: 'Events', icon: '🎖️', grad: 'linear-gradient(135deg,#2a4a9a,#5a7ae0)' },
+  // Campus (3)
+  { title: 'School Main Building', cat: 'Campus', icon: '🏛️', grad: 'linear-gradient(135deg,#b88c0b,#d4a017)' },
+  { title: 'School Grounds & Garden', cat: 'Campus', icon: '🌿', grad: 'linear-gradient(135deg,#1a6b1a,#2e8b2e)' },
+  { title: 'Main Entrance Gate', cat: 'Campus', icon: '🚪', grad: 'linear-gradient(135deg,#8b4513,#a0522d)' },
+  // Meetings (3)
+  { title: 'Parent-Teacher Meeting', cat: 'Meetings', icon: '🤝', grad: 'linear-gradient(135deg,#4a0e8f,#6a2ea0)' },
+  { title: 'Staff Development Session', cat: 'Meetings', icon: '📋', grad: 'linear-gradient(135deg,#0f4a6b,#1a6b8c)' },
+  { title: 'School Management Board', cat: 'Meetings', icon: '🏢', grad: 'linear-gradient(135deg,#2d4a1e,#3d6a2e)' },
+  // Community (3)
+  { title: 'Community Outreach Drive', cat: 'Community', icon: '👥', grad: 'linear-gradient(135deg,#8b1a1a,#b02020)' },
+  { title: 'Village Awareness Camp', cat: 'Community', icon: '🏘️', grad: 'linear-gradient(135deg,#4a3a0a,#6a5a1a)' },
+  { title: 'Tree Plantation Drive', cat: 'Community', icon: '🌳', grad: 'linear-gradient(135deg,#1a5a1a,#2a8a2a)' },
+  // Awards (3)
+  { title: 'Academic Excellence Awards', cat: 'Awards', icon: '🏆', grad: 'linear-gradient(135deg,#b88c0b,#d4a017)' },
+  { title: 'Sports Championship Trophy', cat: 'Awards', icon: '🥇', grad: 'linear-gradient(135deg,#0f2057,#d4a017)' },
+  { title: 'District Topper Felicitation', cat: 'Awards', icon: '🌟', grad: 'linear-gradient(135deg,#1a3a96,#b88c0b)' },
+  // Sports (3)
+  { title: 'Annual Sports Meet', cat: 'Sports', icon: '⚽', grad: 'linear-gradient(135deg,#1a6b1a,#4a9a4a)' },
+  { title: 'Cricket Match Day', cat: 'Sports', icon: '🏏', grad: 'linear-gradient(135deg,#0f2057,#2a5a96)' },
+  { title: 'Athletics & Track Events', cat: 'Sports', icon: '🏃', grad: 'linear-gradient(135deg,#8b1a1a,#cc3333)' },
+  // Hostel (3)
+  { title: 'Hostel Common Room', cat: 'Hostel', icon: '🏠', grad: 'linear-gradient(135deg,#4a2a6b,#6a4a9a)' },
+  { title: 'Dormitory Wing', cat: 'Hostel', icon: '🛏️', grad: 'linear-gradient(135deg,#0f4a6b,#1a6b9a)' },
+  { title: 'Mess Hall & Dining', cat: 'Hostel', icon: '🍽️', grad: 'linear-gradient(135deg,#8b4a1a,#b06030)' },
+  // Labs (3)
+  { title: 'Science Laboratory', cat: 'Labs', icon: '🔬', grad: 'linear-gradient(135deg,#0f5a6b,#1a7a8c)' },
+  { title: 'Computer Lab Session', cat: 'Labs', icon: '💻', grad: 'linear-gradient(135deg,#1a1a6b,#2a2a9a)' },
+  { title: 'Math Activity Lab', cat: 'Labs', icon: '📐', grad: 'linear-gradient(135deg,#2d5a1e,#3d7a2e)' },
+  // Arts (3)
+  { title: 'Art & Craft Exhibition', cat: 'Arts', icon: '🎨', grad: 'linear-gradient(135deg,#8b1a6b,#b02890)' },
+  { title: 'Cultural Dance Performance', cat: 'Arts', icon: '💃', grad: 'linear-gradient(135deg,#6b1a1a,#9a3030)' },
+  { title: 'Music & Band Practice', cat: 'Arts', icon: '🎵', grad: 'linear-gradient(135deg,#1a4a6b,#2a6a9a)' },
+  // Achievements (3)
+  { title: 'State Level Champions', cat: 'Achievements', icon: '🌟', grad: 'linear-gradient(135deg,#b88c0b,#e0b020)' },
+  { title: 'NCC Best Cadet Award', cat: 'Achievements', icon: '🎖️', grad: 'linear-gradient(135deg,#0f2057,#1a3a96)' },
+  { title: 'Academic Toppers 2026', cat: 'Achievements', icon: '📜', grad: 'linear-gradient(135deg,#1a6b1a,#2e8b2e)' },
+  // Parade (3)
+  { title: 'Republic Day Parade', cat: 'Parade', icon: '🪖', grad: 'linear-gradient(135deg,#0f2057,#3a5a96)' },
+  { title: 'Morning Drill Assembly', cat: 'Parade', icon: '🚩', grad: 'linear-gradient(135deg,#1a3a96,#4a6aaa)' },
+  { title: 'March Past Ceremony', cat: 'Parade', icon: '👨‍✈️', grad: 'linear-gradient(135deg,#2a4a0a,#3a6a1a)' },
+  // Classroom (3)
+  { title: 'Interactive Class Session', cat: 'Classroom', icon: '📚', grad: 'linear-gradient(135deg,#4a1a6b,#6a3a9a)' },
+  { title: 'Morning Assembly', cat: 'Classroom', icon: '🙏', grad: 'linear-gradient(135deg,#0f4a2a,#1a6a4a)' },
+  { title: 'Group Study Activity', cat: 'Classroom', icon: '✏️', grad: 'linear-gradient(135deg,#6b4a0a,#9a6a2a)' },
+];
+
+// Heights for masonry visual variety
+const GAL_HEIGHTS = [160, 200, 220, 180, 240, 190, 175, 215];
+
+function renderMasonryGallery(filterCat) {
+  const grid = document.getElementById('gal-masonry-grid');
+  const emptyMsg = document.getElementById('gal-empty-msg');
+  if (!grid) return;
+
+  // Merge real uploaded images with pre-defined slots
+  const realItems = (typeof D !== 'undefined' && D.gallery) ? D.gallery : [];
+  let slots = [...GAL_SLOTS];
+
+  // Inject any real images into corresponding slot positions
+  realItems.forEach(img => {
+    const idx = slots.findIndex(s => s.cat === img.cat && !s.realUrl);
+    if (idx !== -1) { slots[idx].realUrl = img.url; slots[idx].title = img.caption || slots[idx].title; }
+    else { slots.push({ title: img.caption || 'Photo', cat: img.cat || 'Events', realUrl: img.url, icon: '🖼️', grad: 'linear-gradient(135deg,#0f2057,#1a3a96)' }); }
+  });
+
+  const filtered = filterCat === 'all' ? slots : slots.filter(s => s.cat === filterCat);
+
+  if (!filtered.length) { grid.innerHTML = ''; if (emptyMsg) emptyMsg.style.display = ''; return; }
+  if (emptyMsg) emptyMsg.style.display = 'none';
+
+  grid.innerHTML = filtered.map((s, i) => {
+    const h = GAL_HEIGHTS[i % GAL_HEIGHTS.length];
+    const hasReal = s.realUrl;
+    return `
+    <div class="gal-card gal-anim" style="animation-delay:${(i % 9) * 0.04}s;" onclick="openLightbox('${hasReal ? s.realUrl : ''}')">
+      ${hasReal
+        ? `<img src="${s.realUrl}" alt="${s.title}" style="height:${h}px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="gal-card-placeholder" style="background:${s.grad};height:${h}px;display:none;">
+             <span class="gal-ph-icon">${s.icon}</span>
+             <span class="gal-ph-title">${s.title}</span>
+           </div>`
+        : `<div class="gal-card-placeholder" style="background:${s.grad};height:${h}px;">
+             <span class="gal-ph-icon">${s.icon}</span>
+             <span class="gal-ph-title">${s.title}</span>
+           </div>`
+      }
+      <div class="gal-card-hover">
+        <div class="gal-card-hover-title">${s.title}</div>
+        <div class="gal-card-hover-row">
+          <span class="gal-card-cat-tag">${s.cat}</span>
+          <span class="gal-card-zoom">⊕</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Update stat
+  const statEl = document.getElementById('gal-stat-total');
+  if (statEl) statEl.textContent = slots.length;
+}
+
+function filterGallery(cat) {
+  // Update active button
+  document.querySelectorAll('.gal-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+  renderMasonryGallery(cat);
+}
+
+// Hero banner auto-rotate
+let galHeroIdx = 0;
+let galHeroTimer = null;
+function galHeroGo(idx) {
+  const slides = document.querySelectorAll('.gal-hero-slide');
+  const dots = document.querySelectorAll('.gal-hdot');
+  if (!slides.length) return;
+  slides[galHeroIdx].classList.remove('active');
+  if (dots[galHeroIdx]) dots[galHeroIdx].classList.remove('active');
+  galHeroIdx = idx;
+  slides[galHeroIdx].classList.add('active');
+  if (dots[galHeroIdx]) dots[galHeroIdx].classList.add('active');
+}
+function galHeroNext() {
+  const slides = document.querySelectorAll('.gal-hero-slide');
+  galHeroGo((galHeroIdx + 1) % slides.length);
+}
+function startGalHeroAuto() {
+  clearInterval(galHeroTimer);
+  galHeroTimer = setInterval(galHeroNext, 4500);
+}
+
+// Hook into goPage to init gallery when navigating to it
+const _origGoPage = typeof goPage === 'function' ? goPage : null;
+function initGalleryPage() {
+  renderMasonryGallery('all');
+  startGalHeroAuto();
+}
+
+// Patch goPage
+document.addEventListener('DOMContentLoaded', () => {
+  // Also render if gallery is already active
+  if (document.getElementById('pp-gallery')?.classList.contains('active')) {
+    initGalleryPage();
+  }
+});
+
+// Override goPage to hook gallery init
+(function patchGoPage() {
+  const orig = window.goPage;
+  if (orig) {
+    window.goPage = function(id) {
+      orig(id);
+      if (id === 'gallery') {
+        setTimeout(initGalleryPage, 60);
+      }
+    };
+  }
+})();

@@ -1381,6 +1381,75 @@ function deleteApplication(i) {
   showToast('Application deleted');
 }
 
+// ===================== HERO SLIDER =====================
+(function () {
+  let current = 0;
+  const total = 3;
+  let autoTimer = null;
+  let progressTimer = null;
+  const DURATION = 5000;
+
+  function getSlides() { return document.querySelectorAll('.hs-slide'); }
+  function getDots() { return document.querySelectorAll('.hs-dot'); }
+  function getBar() { return document.getElementById('hs-progress-bar'); }
+
+  function goTo(idx) {
+    const slides = getSlides();
+    const dots = getDots();
+    if (!slides.length) return;
+    slides[current].classList.remove('active');
+    dots[current] && dots[current].classList.remove('active');
+    current = (idx + total) % total;
+    slides[current].classList.add('active');
+    dots[current] && dots[current].classList.add('active');
+    resetProgress();
+  }
+
+  function resetProgress() {
+    const bar = getBar();
+    if (!bar) return;
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        bar.style.transition = `width ${DURATION}ms linear`;
+        bar.style.width = '100%';
+      });
+    });
+  }
+
+  function startAuto() {
+    stopAuto();
+    autoTimer = setInterval(() => goTo(current + 1), DURATION);
+    resetProgress();
+  }
+
+  function stopAuto() {
+    clearInterval(autoTimer);
+  }
+
+  window.sliderNext = function () { goTo(current + 1); stopAuto(); startAuto(); };
+  window.sliderPrev = function () { goTo(current - 1); stopAuto(); startAuto(); };
+  window.sliderGo = function (idx) { goTo(idx); stopAuto(); startAuto(); };
+
+  // Pause on hover
+  document.addEventListener('DOMContentLoaded', function () {
+    const slider = document.getElementById('hero-slider');
+    if (slider) {
+      slider.addEventListener('mouseenter', stopAuto);
+      slider.addEventListener('mouseleave', startAuto);
+      // Touch swipe support
+      let tx = 0;
+      slider.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      slider.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 40) { dx < 0 ? sliderNext() : sliderPrev(); }
+      }, { passive: true });
+      startAuto();
+    }
+  });
+})();
+
 // ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', function () {
   // Load saved data or use defaults
@@ -1399,3 +1468,322 @@ document.addEventListener('DOMContentLoaded', function () {
   initReveal();
   initChat();
 });
+/* =========================================================
+   GALLERY PAGE — ENHANCED JS
+   ========================================================= */
+
+// ---- Photo slot definitions (18 pre-defined + 18 more = 36 total across 12 categories) ----
+const GAL_SLOTS = [
+  // Events (3)
+  { title: 'Annual Day Celebration', cat: 'Events', icon: '🎉', grad: 'linear-gradient(135deg,#1a3a96,#4a6ad4)' },
+  { title: 'Independence Day Parade', cat: 'Events', icon: '🇮🇳', grad: 'linear-gradient(135deg,#0f2057,#1a3a96)' },
+  { title: 'Founder\'s Day Ceremony', cat: 'Events', icon: '🎖️', grad: 'linear-gradient(135deg,#2a4a9a,#5a7ae0)' },
+  // Campus (3)
+  { title: 'School Main Building', cat: 'Campus', icon: '🏛️', grad: 'linear-gradient(135deg,#b88c0b,#d4a017)' },
+  { title: 'School Grounds & Garden', cat: 'Campus', icon: '🌿', grad: 'linear-gradient(135deg,#1a6b1a,#2e8b2e)' },
+  { title: 'Main Entrance Gate', cat: 'Campus', icon: '🚪', grad: 'linear-gradient(135deg,#8b4513,#a0522d)' },
+  // Meetings (3)
+  { title: 'Parent-Teacher Meeting', cat: 'Meetings', icon: '🤝', grad: 'linear-gradient(135deg,#4a0e8f,#6a2ea0)' },
+  { title: 'Staff Development Session', cat: 'Meetings', icon: '📋', grad: 'linear-gradient(135deg,#0f4a6b,#1a6b8c)' },
+  { title: 'School Management Board', cat: 'Meetings', icon: '🏢', grad: 'linear-gradient(135deg,#2d4a1e,#3d6a2e)' },
+  // Community (3)
+  { title: 'Community Outreach Drive', cat: 'Community', icon: '👥', grad: 'linear-gradient(135deg,#8b1a1a,#b02020)' },
+  { title: 'Village Awareness Camp', cat: 'Community', icon: '🏘️', grad: 'linear-gradient(135deg,#4a3a0a,#6a5a1a)' },
+  { title: 'Tree Plantation Drive', cat: 'Community', icon: '🌳', grad: 'linear-gradient(135deg,#1a5a1a,#2a8a2a)' },
+  // Awards (3)
+  { title: 'Academic Excellence Awards', cat: 'Awards', icon: '🏆', grad: 'linear-gradient(135deg,#b88c0b,#d4a017)' },
+  { title: 'Sports Championship Trophy', cat: 'Awards', icon: '🥇', grad: 'linear-gradient(135deg,#0f2057,#d4a017)' },
+  { title: 'District Topper Felicitation', cat: 'Awards', icon: '🌟', grad: 'linear-gradient(135deg,#1a3a96,#b88c0b)' },
+  // Sports (3)
+  { title: 'Annual Sports Meet', cat: 'Sports', icon: '⚽', grad: 'linear-gradient(135deg,#1a6b1a,#4a9a4a)' },
+  { title: 'Cricket Match Day', cat: 'Sports', icon: '🏏', grad: 'linear-gradient(135deg,#0f2057,#2a5a96)' },
+  { title: 'Athletics & Track Events', cat: 'Sports', icon: '🏃', grad: 'linear-gradient(135deg,#8b1a1a,#cc3333)' },
+  // Hostel (3)
+  { title: 'Hostel Common Room', cat: 'Hostel', icon: '🏠', grad: 'linear-gradient(135deg,#4a2a6b,#6a4a9a)' },
+  { title: 'Dormitory Wing', cat: 'Hostel', icon: '🛏️', grad: 'linear-gradient(135deg,#0f4a6b,#1a6b9a)' },
+  { title: 'Mess Hall & Dining', cat: 'Hostel', icon: '🍽️', grad: 'linear-gradient(135deg,#8b4a1a,#b06030)' },
+  // Labs (3)
+  { title: 'Science Laboratory', cat: 'Labs', icon: '🔬', grad: 'linear-gradient(135deg,#0f5a6b,#1a7a8c)' },
+  { title: 'Computer Lab Session', cat: 'Labs', icon: '💻', grad: 'linear-gradient(135deg,#1a1a6b,#2a2a9a)' },
+  { title: 'Math Activity Lab', cat: 'Labs', icon: '📐', grad: 'linear-gradient(135deg,#2d5a1e,#3d7a2e)' },
+  // Arts (3)
+  { title: 'Art & Craft Exhibition', cat: 'Arts', icon: '🎨', grad: 'linear-gradient(135deg,#8b1a6b,#b02890)' },
+  { title: 'Cultural Dance Performance', cat: 'Arts', icon: '💃', grad: 'linear-gradient(135deg,#6b1a1a,#9a3030)' },
+  { title: 'Music & Band Practice', cat: 'Arts', icon: '🎵', grad: 'linear-gradient(135deg,#1a4a6b,#2a6a9a)' },
+  // Achievements (3)
+  { title: 'State Level Champions', cat: 'Achievements', icon: '🌟', grad: 'linear-gradient(135deg,#b88c0b,#e0b020)' },
+  { title: 'NCC Best Cadet Award', cat: 'Achievements', icon: '🎖️', grad: 'linear-gradient(135deg,#0f2057,#1a3a96)' },
+  { title: 'Academic Toppers 2026', cat: 'Achievements', icon: '📜', grad: 'linear-gradient(135deg,#1a6b1a,#2e8b2e)' },
+  // Parade (3)
+  { title: 'Republic Day Parade', cat: 'Parade', icon: '🪖', grad: 'linear-gradient(135deg,#0f2057,#3a5a96)' },
+  { title: 'Morning Drill Assembly', cat: 'Parade', icon: '🚩', grad: 'linear-gradient(135deg,#1a3a96,#4a6aaa)' },
+  { title: 'March Past Ceremony', cat: 'Parade', icon: '👨‍✈️', grad: 'linear-gradient(135deg,#2a4a0a,#3a6a1a)' },
+  // Classroom (3)
+  { title: 'Interactive Class Session', cat: 'Classroom', icon: '📚', grad: 'linear-gradient(135deg,#4a1a6b,#6a3a9a)' },
+  { title: 'Morning Assembly', cat: 'Classroom', icon: '🙏', grad: 'linear-gradient(135deg,#0f4a2a,#1a6a4a)' },
+  { title: 'Group Study Activity', cat: 'Classroom', icon: '✏️', grad: 'linear-gradient(135deg,#6b4a0a,#9a6a2a)' },
+];
+
+// ═══════════════════════════════════════════════════════
+// GALLERY — Database-backed (fetches from gallery-api.php)
+// Falls back to placeholder slots if API unavailable.
+// ═══════════════════════════════════════════════════════
+
+const GAL_HEIGHTS = [160, 200, 220, 180, 240, 190, 175, 215];
+
+// All images fetched from DB are stored here
+let _galDBImages  = null;   // null = not loaded yet
+let _galDBCats    = null;
+let _galLoadState = 'idle'; // 'idle' | 'loading' | 'done' | 'error'
+let _galActiveCat = 'all';
+
+// ── Fetch from gallery-api.php ─────────────────────────
+async function loadGalleryFromDB() {
+  if (_galLoadState === 'loading') return;
+  _galLoadState = 'loading';
+
+  // Show loading skeleton
+  const grid = document.getElementById('gal-masonry-grid');
+  if (grid) {
+    grid.innerHTML = Array.from({length: 8}, (_, i) =>
+      `<div class="gal-card" style="animation-delay:${i*0.05}s;">
+         <div class="gal-card-placeholder" style="background:linear-gradient(135deg,#e2e8f0,#f1f5f9);height:${GAL_HEIGHTS[i%GAL_HEIGHTS.length]}px;">
+           <span class="gal-ph-icon" style="font-size:28px;opacity:.3;">🖼️</span>
+         </div>
+       </div>`).join('');
+  }
+
+  try {
+    const res  = await fetch('gallery-api.php?limit=500', { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message || 'API error');
+
+    _galDBImages  = data.images  || [];
+    _galDBCats    = data.categories || [];
+    _galLoadState = 'done';
+
+    // Dynamically rebuild filter buttons from DB categories
+    _buildGalleryFilterBar(_galDBCats);
+
+    // Update stat strip
+    const statEl = document.getElementById('gal-stat-total');
+    if (statEl) statEl.textContent = _galDBImages.length;
+    const catCountEl = document.getElementById('gal-stat-cats');
+    if (catCountEl) catCountEl.textContent = _galDBCats.length || '—';
+
+    renderMasonryGallery(_galActiveCat);
+
+  } catch (err) {
+    _galLoadState = 'error';
+    console.warn('[Gallery] Could not load from DB, using placeholder slots.', err.message);
+    // Fallback: render placeholder slots as before
+    _galDBImages = [];
+    renderMasonryGallery(_galActiveCat);
+  }
+}
+
+// ── Build filter buttons dynamically from DB categories ─
+function _buildGalleryFilterBar(cats) {
+  const bar = document.getElementById('gal-filter-bar');
+  if (!bar) return;
+
+  // Category → icon map (matches admin)
+  const catIcons = {
+    Campus:'🏫', Classrooms:'📚', Sports:'🏃', Events:'🎉', Parade:'🎖️',
+    Hostel:'🏠', Lab:'🔬', Labs:'🔬', Arts:'🎨', Achievements:'🏆',
+    Others:'📷', Meetings:'🤝', Community:'👥', Awards:'🏆',
+    Classroom:'📚', Academics:'📖', 'Sainik Training':'🪖'
+  };
+
+  const allBtn = `<button class="gal-filter-btn ${_galActiveCat==='all'?'active':''}" data-cat="all" onclick="filterGallery('all')">All Photos <span style="opacity:.65;font-size:11px;">(${_galDBImages ? _galDBImages.length : ''})</span></button>`;
+
+  const catBtns = cats.map(c => {
+    const icon = catIcons[c.category] || '🖼️';
+    const active = _galActiveCat === c.category ? 'active' : '';
+    return `<button class="gal-filter-btn ${active}" data-cat="${c.category}" onclick="filterGallery('${c.category}')">${icon} ${c.category} <span style="opacity:.65;font-size:11px;">(${c.cnt})</span></button>`;
+  }).join('');
+
+  bar.innerHTML = allBtn + catBtns;
+}
+
+// ── Render masonry grid ────────────────────────────────
+function renderMasonryGallery(filterCat) {
+  const grid     = document.getElementById('gal-masonry-grid');
+  const emptyMsg = document.getElementById('gal-empty-msg');
+  if (!grid) return;
+
+  // ── If DB not loaded yet, trigger load ──
+  if (_galLoadState === 'idle') {
+    loadGalleryFromDB();
+    return;
+  }
+  if (_galLoadState === 'loading') return; // skeleton already shown
+
+  // ── Build item list ──
+  // If we have DB images, use ONLY those (no phantom placeholders).
+  // If DB load failed/empty, fall back to placeholder slots so page isn't blank.
+  let items;
+
+  if (_galDBImages && _galDBImages.length > 0) {
+    // Real DB images → map to unified shape
+    items = _galDBImages.map(img => ({
+      title:       img.caption || 'Photo',
+      description: img.description || '',
+      cat:         img.category || 'Others',
+      realUrl:     img.url,
+      thumbUrl:    img.thumb || img.url,
+      icon:        '🖼️',
+      grad:        'linear-gradient(135deg,#0f2057,#1a3a96)',
+    }));
+  } else {
+    // Fallback placeholder slots (no real images available)
+    items = GAL_SLOTS.map(s => ({
+      title:       s.title,
+      description: '',
+      cat:         s.cat,
+      realUrl:     null,
+      thumbUrl:    null,
+      icon:        s.icon,
+      grad:        s.grad,
+    }));
+  }
+
+  // Apply category filter
+  const filtered = filterCat === 'all' ? items : items.filter(s => s.cat === filterCat);
+
+  if (!filtered.length) {
+    grid.innerHTML = '';
+    if (emptyMsg) emptyMsg.style.display = '';
+    return;
+  }
+  if (emptyMsg) emptyMsg.style.display = 'none';
+
+  grid.innerHTML = filtered.map((s, i) => {
+    const h       = GAL_HEIGHTS[i % GAL_HEIGHTS.length];
+    const hasReal = !!s.realUrl;
+    // Escape for inline onclick attr
+    const safeUrl   = hasReal ? s.realUrl.replace(/'/g, "\\'") : '';
+    const safeTitle = s.title.replace(/'/g, "\\'");
+    const safeDesc  = s.description.replace(/'/g, "\\'");
+
+    return `<div class="gal-card gal-anim" style="animation-delay:${(i % 9) * 0.04}s;"
+         onclick="openLightboxFull('${safeUrl}','${safeTitle}','${safeDesc}')">
+      ${hasReal
+        ? `<img src="${s.thumbUrl || s.realUrl}" alt="${s.title}"
+               style="height:${h}px;width:100%;object-fit:cover;display:block;"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="gal-card-placeholder" style="background:${s.grad};height:${h}px;display:none;">
+             <span class="gal-ph-icon">${s.icon}</span>
+             <span class="gal-ph-title">${s.title}</span>
+           </div>`
+        : `<div class="gal-card-placeholder" style="background:${s.grad};height:${h}px;">
+             <span class="gal-ph-icon">${s.icon}</span>
+             <span class="gal-ph-title">${s.title}</span>
+           </div>`
+      }
+      <div class="gal-card-hover">
+        <div class="gal-card-hover-title">${s.title}</div>
+        ${s.description ? `<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:3px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${s.description}</div>` : ''}
+        <div class="gal-card-hover-row" style="margin-top:6px;">
+          <span class="gal-card-cat-tag">${s.cat}</span>
+          <span class="gal-card-zoom">⊕</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Update stat total
+  const statEl = document.getElementById('gal-stat-total');
+  if (statEl && filterCat === 'all') statEl.textContent = items.length;
+}
+
+// ── Filter handler ─────────────────────────────────────
+function filterGallery(cat) {
+  _galActiveCat = cat;
+  document.querySelectorAll('.gal-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+  renderMasonryGallery(cat);
+}
+
+// ── Enhanced lightbox (caption + description) ──────────
+function openLightboxFull(url, title, desc) {
+  if (!url) return;
+  const lb    = document.getElementById('lightbox');
+  const img   = document.getElementById('lightbox-img');
+  if (!lb || !img) { openLightbox(url); return; }
+
+  img.src = url;
+
+  // Inject or update caption panel
+  let cap = document.getElementById('lb-caption-panel');
+  if (!cap) {
+    cap = document.createElement('div');
+    cap.id = 'lb-caption-panel';
+    cap.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:28px 28px 20px;text-align:center;pointer-events:none;';
+    lb.appendChild(cap);
+  }
+  cap.innerHTML = (title || desc)
+    ? `${title ? `<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">${title}</div>` : ''}
+       ${desc  ? `<div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.5;max-width:600px;margin:0 auto;">${desc}</div>` : ''}`
+    : '';
+
+  lb.classList.add('open');
+}
+
+// Hero banner auto-rotate
+let galHeroIdx = 0;
+let galHeroTimer = null;
+function galHeroGo(idx) {
+  const slides = document.querySelectorAll('.gal-hero-slide');
+  const dots   = document.querySelectorAll('.gal-hdot');
+  if (!slides.length) return;
+  slides[galHeroIdx].classList.remove('active');
+  if (dots[galHeroIdx]) dots[galHeroIdx].classList.remove('active');
+  galHeroIdx = idx;
+  slides[galHeroIdx].classList.add('active');
+  if (dots[galHeroIdx]) dots[galHeroIdx].classList.add('active');
+}
+function galHeroNext() {
+  const slides = document.querySelectorAll('.gal-hero-slide');
+  galHeroGo((galHeroIdx + 1) % slides.length);
+}
+function startGalHeroAuto() {
+  clearInterval(galHeroTimer);
+  galHeroTimer = setInterval(galHeroNext, 4500);
+}
+
+// ── Gallery page init ──────────────────────────────────
+function initGalleryPage() {
+  // Reset load state so navigating away and back re-fetches fresh data
+  if (_galLoadState === 'done' && _galDBImages !== null) {
+    // Already loaded — just re-render (fast)
+    renderMasonryGallery(_galActiveCat);
+  } else {
+    _galLoadState = 'idle';
+    loadGalleryFromDB();
+  }
+  startGalHeroAuto();
+}
+
+// DOMContentLoaded: init gallery if already on that page
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('pp-gallery')?.classList.contains('active')) {
+    initGalleryPage();
+  }
+});
+
+// Override goPage to hook gallery init
+(function patchGoPage() {
+  const orig = window.goPage;
+  if (orig) {
+    window.goPage = function(id) {
+      orig(id);
+      if (id === 'gallery') {
+        setTimeout(initGalleryPage, 60);
+      }
+    };
+  }
+})();
