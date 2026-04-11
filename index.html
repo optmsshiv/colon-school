@@ -100,428 +100,75 @@
     <!-- ===== PAGE: HOME ===== -->
     <div id="pp-home" class="pp active">
 
-      <!-- ═══════════════════════════════════════════════════════
-           CINEMATIC HERO — Ken Burns + Video-Ready
-           To enable real video: set data-video="true" below
-           and place hero.mp4 + hero.webm in /assets/videos/
-      ════════════════════════════════════════════════════════ -->
-      <section class="cin-hero" id="cin-hero" aria-label="School highlights"
-               data-video="false"
-               data-video-src-mp4="assets/videos/hero.mp4"
-               data-video-src-webm="assets/videos/hero.webm">
-
-        <!-- ── Video layer (activated when data-video="true") ── -->
-        <div class="cin-video-wrap" id="cin-video-wrap" aria-hidden="true">
-          <video id="cin-video" autoplay muted loop playsinline preload="metadata"
-                 poster="/assets/images/school_image.png">
-          </video>
-          <div class="cin-video-overlay"></div>
-        </div>
-
-        <!-- ── Ken Burns image slides ── -->
-        <div class="cin-slides" id="cin-slides" aria-hidden="true">
-          <div class="cin-slide active" data-index="0">
-            <div class="cin-kb" style="background-image:url('/assets/images/school_image.png')" data-kb="zoom-out-right"></div>
-            <div class="cin-slide-overlay" style="background:linear-gradient(125deg,rgba(10, 22, 64, 0.52) 0%,rgba(15,32,87,0.55) 50%,rgba(184,134,11,0.28) 100%)"></div>
-          </div>
-          <div class="cin-slide" data-index="1">
-            <div class="cin-kb" style="background-image:url('/assets/images/school_image_1.jpeg')" data-kb="zoom-in-left"></div>
-            <div class="cin-slide-overlay" style="background:linear-gradient(125deg,rgba(15, 32, 87, 0.576) 0%,rgba(184,134,11,0.40) 100%)"></div>
-          </div>
-          <div class="cin-slide" data-index="2">
-            <div class="cin-kb" style="background-image:url('/assets/images/school_image.png')" data-kb="pan-left"></div>
-            <div class="cin-slide-overlay" style="background:linear-gradient(125deg,rgba(30,60,180,0.75) 0%,rgba(99, 94, 16, 0.7) 100%)"></div>
-          </div>
-        </div>
-
-        <!-- ── Particle shimmer canvas ── -->
-        <canvas class="cin-particles" id="cin-particles" aria-hidden="true"></canvas>
-
-        <!-- ── Content slides ── -->
-        <div class="cin-content-track" id="cin-content-track">
-
-          <div class="cin-content active" data-index="0">
-            <div class="cin-content-inner">
-              <div class="cin-eyebrow">
-                <span class="cin-eyebrow-line"></span>
-                <span>Welcome to Colonel's Sainik Vidyalaya</span>
-                <span class="cin-eyebrow-line"></span>
-              </div>
-              <h2 class="cin-heading">
-                <span class="cin-h-line">Cradle For</span>
-                <span class="cin-h-em"><em>Excellence</em></span>
-              </h2>
-              <p class="cin-sub">A premier CBSE Sainik school shaping disciplined leaders of tomorrow.</p>
-              <div class="cin-btns">
-                <button class="cin-btn-primary" onclick="goPage('admissions')">Apply for Admission →</button>
-                <button class="cin-btn-ghost"   onclick="goPage('about')">Discover More</button>
-              </div>
-              <div class="cin-trust-row">
-                <span>🎖️ Sainik Discipline</span>
-                <span class="cin-tr-dot">◆</span>
-                <span>📚 CBSE Curriculum</span>
-                <span class="cin-tr-dot">◆</span>
-                <span>📍 Madhepura, Bihar</span>
-              </div>
+      <!-- ===== HERO SLIDER ===== -->
+      <section class="hero-slider" id="hero-slider" aria-label="School highlights slideshow">
+        <!-- Slides -->
+        <div class="hs-slide active" data-slide="0">
+          <div class="hs-bg" style="background-image:url('/assets/images/school_image.png')"></div>
+          <div class="hs-overlay"></div>
+          <div class="hs-content">
+            <span class="hs-pill">Welcome to Colonel's Sainik Vidyalaya</span>
+            <h2 class="hs-heading">
+              <span class="hs-line1">Cradle For</span>
+              <span class="hs-line2"><em>Excellence</em></span>
+            </h2>
+            <p class="hs-sub">A premier CBSE Sainik school shaping disciplined leaders of tomorrow.</p>
+            <div class="hs-btns">
+              <button class="hs-btn-primary" onclick="goPage('admissions')">Apply for Admission →</button>
+              <button class="hs-btn-ghost" onclick="goPage('about')">Discover More</button>
             </div>
           </div>
+        </div>
 
-          <div class="cin-content" data-index="1">
-            <div class="cin-content-inner">
-              <div class="cin-eyebrow">
-                <span class="cin-eyebrow-line"></span>
-                <span>Sainik Discipline · CBSE Curriculum</span>
-                <span class="cin-eyebrow-line"></span>
-              </div>
-              <h2 class="cin-heading">
-                <span class="cin-h-line">Nurturing</span>
-                <span class="cin-h-em"><em>Future Leaders</em></span>
-              </h2>
-              <p class="cin-sub">Blending military values with modern education — from Nursery to Class VIII.</p>
-              <div class="cin-btns">
-                <button class="cin-btn-primary" onclick="goPage('academics')">Explore Academics →</button>
-                <button class="cin-btn-ghost"   onclick="goPage('facilities')">Our Facilities</button>
-              </div>
-              <div class="cin-trust-row">
-                <span>🏫 Nursery – Class VIII</span>
-                <span class="cin-tr-dot">◆</span>
-                <span>🏠 Day · Boarder · Hostel</span>
-                <span class="cin-tr-dot">◆</span>
-                <span>👩‍🏫 Expert Faculty</span>
-              </div>
+        <div class="hs-slide" data-slide="1">
+          <div class="hs-bg" style="background-image:url('/assets/images/school_image.png')"></div>
+          <div class="hs-overlay" style="background:linear-gradient(120deg,rgba(15,32,87,0.88) 0%,rgba(184,134,11,0.45) 100%)"></div>
+          <div class="hs-content">
+            <span class="hs-pill">Sainik Discipline · CBSE Curriculum</span>
+            <h2 class="hs-heading">
+              <span class="hs-line1">Nurturing</span>
+              <span class="hs-line2"><em>Future Leaders</em></span>
+            </h2>
+            <p class="hs-sub">Blending military values with modern education — from Nursery to Class VIII.</p>
+            <div class="hs-btns">
+              <button class="hs-btn-primary" onclick="goPage('academics')">Explore Academics →</button>
+              <button class="hs-btn-ghost" onclick="goPage('facilities')">Our Facilities</button>
             </div>
           </div>
+        </div>
 
-          <div class="cin-content" data-index="2">
-            <div class="cin-content-inner">
-              <div class="cin-eyebrow">
-                <span class="cin-eyebrow-line"></span>
-                <span>Admissions Open · 2026–27 Session</span>
-                <span class="cin-eyebrow-line"></span>
-              </div>
-              <h2 class="cin-heading">
-                <span class="cin-h-line">Madhepura's</span>
-                <span class="cin-h-em"><em>Finest School</em></span>
-              </h2>
-              <p class="cin-sub">Day Scholar · Day Boarder · Full Boarder programs for your child's bright future.</p>
-              <div class="cin-btns">
-                <button class="cin-btn-primary" onclick="goPage('apply')">🎓 Apply Online →</button>
-                <button class="cin-btn-ghost"   onclick="goPage('contact')">Contact Us</button>
-              </div>
-              <div class="cin-trust-row">
-                <span>🎓 Limited Seats</span>
-                <span class="cin-tr-dot">◆</span>
-                <span>📝 Online Application</span>
-                <span class="cin-tr-dot">◆</span>
-                <span>✅ Instant Token</span>
-              </div>
+        <div class="hs-slide" data-slide="2">
+          <div class="hs-bg" style="background-image:url('/assets/images/school_image_1.jpeg')"></div>
+          <div class="hs-overlay" style="background:linear-gradient(120deg,rgba(89, 129, 248, 0.769) 0%,rgba(255, 240, 174, 0.2) 100%)"></div>
+          <div class="hs-content">
+            <span class="hs-pill">Admissions Open · 2026–27 Session</span>
+            <h2 class="hs-heading">
+              <span class="hs-line1">Madhepura's</span>
+              <span class="hs-line2"><em>Finest School</em></span>
+            </h2>
+            <p class="hs-sub">Day Scholar · Day Boarder · Full Boarder programs for your child's bright future.</p>
+            <div class="hs-btns">
+              <button class="hs-btn-primary" onclick="goPage('apply')">🎓 Apply Online →</button>
+              <button class="hs-btn-ghost" onclick="goPage('contact')">Contact Us</button>
             </div>
           </div>
-
-        </div><!-- /.cin-content-track -->
-
-        <!-- ── Slide counter ── -->
-        <div class="cin-counter" id="cin-counter" aria-hidden="true">
-          <span class="cin-counter-cur" id="cin-counter-cur">01</span>
-          <span class="cin-counter-sep"></span>
-          <span class="cin-counter-tot">03</span>
         </div>
 
-        <!-- ── Arrows ── -->
-        <button class="cin-arrow cin-prev" onclick="cinPrev()" aria-label="Previous slide">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <button class="cin-arrow cin-next" onclick="cinNext()" aria-label="Next slide">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+        <!-- Controls -->
+        <button class="hs-arrow hs-prev" onclick="sliderPrev()" aria-label="Previous slide">&#8592;</button>
+        <button class="hs-arrow hs-next" onclick="sliderNext()" aria-label="Next slide">&#8594;</button>
 
-        <!-- ── Dot + ring-progress nav ── -->
-        <div class="cin-nav" id="cin-nav">
-          <button class="cin-dot active" data-index="0" onclick="cinGo(0)" aria-label="Slide 1">
-            <svg class="cin-dot-ring" viewBox="0 0 36 36"><circle class="cin-dot-track" cx="18" cy="18" r="15"/><circle class="cin-dot-fill" cx="18" cy="18" r="15"/></svg>
-            <span class="cin-dot-inner"></span>
-          </button>
-          <button class="cin-dot" data-index="1" onclick="cinGo(1)" aria-label="Slide 2">
-            <svg class="cin-dot-ring" viewBox="0 0 36 36"><circle class="cin-dot-track" cx="18" cy="18" r="15"/><circle class="cin-dot-fill" cx="18" cy="18" r="15"/></svg>
-            <span class="cin-dot-inner"></span>
-          </button>
-          <button class="cin-dot" data-index="2" onclick="cinGo(2)" aria-label="Slide 3">
-            <svg class="cin-dot-ring" viewBox="0 0 36 36"><circle class="cin-dot-track" cx="18" cy="18" r="15"/><circle class="cin-dot-fill" cx="18" cy="18" r="15"/></svg>
-            <span class="cin-dot-inner"></span>
-          </button>
+        <!-- Dots -->
+        <div class="hs-dots" id="hs-dots">
+          <button class="hs-dot active" onclick="sliderGo(0)" aria-label="Slide 1"></button>
+          <button class="hs-dot" onclick="sliderGo(1)" aria-label="Slide 2"></button>
+          <button class="hs-dot" onclick="sliderGo(2)" aria-label="Slide 3"></button>
         </div>
 
-        <!-- ── Scroll hint ── -->
-        <div class="cin-scroll-hint" aria-hidden="true">
-          <span>Scroll</span>
-          <div class="cin-scroll-mouse"><div class="cin-scroll-wheel"></div></div>
-        </div>
-
-        <!-- ── Mute toggle (only shown when video active) ── -->
-        <button class="cin-mute-btn" id="cin-mute-btn" onclick="cinToggleMute()" aria-label="Toggle mute" style="display:none;">🔇</button>
-
+        <!-- Progress bar -->
+        <div class="hs-progress"><div class="hs-progress-bar" id="hs-progress-bar"></div></div>
       </section>
-
-      <!-- ═══════════════════════════════════════════════════════
-           CINEMATIC HERO STYLES
-      ════════════════════════════════════════════════════════ -->
-      <style>
-      .cin-hero {
-        position:relative; width:100%; height:85vh;
-        min-height:540px; max-height:900px;
-        overflow:hidden; background:#2945aa;
-        cursor:default;
-      }
-
-      /* ── Video layer ── */
-      .cin-video-wrap { position:absolute; inset:0; z-index:1; display:none; }
-      .cin-video-wrap.active { display:block; }
-      .cin-video-wrap video { width:100%; height:100%; object-fit:cover; display:block; }
-      .cin-video-overlay {
-        position:absolute; inset:0;
-        background:linear-gradient(125deg,rgba(10,22,64,0.72) 0%,rgba(15,32,87,0.45) 60%,rgba(0,0,0,0.35) 100%);
-      }
-
-      /* ── KB slides ── */
-      .cin-slides { position:absolute; inset:0; z-index:1; }
-      .cin-slide { position:absolute; inset:0; opacity:0; transition:opacity 1.4s cubic-bezier(.4,0,.2,1); will-change:opacity; }
-      .cin-slide.active { opacity:1; }
-
-      .cin-kb {
-        position:absolute; inset:-8%;
-        background-size:cover; background-position:center;
-        will-change:transform;
-      }
-
-      /* KB animations */
-      @keyframes kb-zoom-out-right {
-        0%   { transform:scale(1.18) translateX(3%)  translateY(0%); }
-        100% { transform:scale(1.0)  translateX(-1%) translateY(0%); }
-      }
-      @keyframes kb-zoom-in-left {
-        0%   { transform:scale(1.0)  translateX(-2%) translateY(1%); }
-        100% { transform:scale(1.16) translateX(2%)  translateY(-1%); }
-      }
-      @keyframes kb-pan-left {
-        0%   { transform:scale(1.12) translateX(4%)  translateY(-1%); }
-        100% { transform:scale(1.12) translateX(-4%) translateY(1%); }
-      }
-      .cin-kb.kb-animate[data-kb="zoom-out-right"] { animation:kb-zoom-out-right 7s ease-out forwards; }
-      .cin-kb.kb-animate[data-kb="zoom-in-left"]   { animation:kb-zoom-in-left   7s ease-in-out forwards; }
-      .cin-kb.kb-animate[data-kb="pan-left"]        { animation:kb-pan-left       7s linear forwards; }
-
-      .cin-slide-overlay { position:absolute; inset:0; }
-
-      /* ── Particles ── */
-      .cin-particles { position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0.4; }
-
-      /* ── Content ── */
-      .cin-content-track { position:absolute; inset:0; z-index:10; pointer-events:none; }
-      .cin-content {
-        position:absolute; inset:0;
-        display:flex; align-items:center; justify-content:flex-start;
-        padding:0 8% 80px;
-        opacity:0; pointer-events:none;
-        transition:opacity 0.5s ease;
-      }
-      .cin-content.active { opacity:1; pointer-events:auto; }
-      .cin-content-inner { max-width:680px; width:100%; }
-
-      /* Eyebrow */
-      .cin-eyebrow {
-        display:flex; align-items:center; gap:12px;
-        font-size:11px; font-weight:700; letter-spacing:2.5px;
-        text-transform:uppercase; color:#fbbf24;
-        margin-bottom:18px;
-        opacity:0; transform:translateY(16px);
-        transition:opacity 0.6s ease, transform 0.6s ease;
-      }
-      .cin-content.active .cin-eyebrow { opacity:1; transform:translateY(0); transition-delay:0.1s; }
-      .cin-eyebrow-line { flex:1; max-width:36px; height:1.5px; background:linear-gradient(90deg,transparent,#fbbf24); }
-      .cin-eyebrow-line:last-child { background:linear-gradient(90deg,#fbbf24,transparent); }
-
-      /* Heading */
-      .cin-heading { display:flex; flex-direction:column; gap:0; margin-bottom:18px; }
-      .cin-h-line {
-        display:block;
-        font-size:clamp(38px,5.8vw,72px); font-weight:800; line-height:1.05;
-        color:#fff; letter-spacing:-1px;
-        text-shadow:0 2px 32px rgba(0,0,0,.5);
-        font-family:'Cinzel','Segoe UI',serif;
-        opacity:0; transform:translateY(28px);
-        transition:opacity 0.7s ease, transform 0.7s ease;
-      }
-      .cin-h-em {
-        display:block;
-        font-size:clamp(40px,6.2vw,78px); font-weight:800; line-height:1.05;
-        opacity:0; transform:translateY(28px);
-        transition:opacity 0.7s ease, transform 0.7s ease;
-      }
-      .cin-h-em em {
-        font-style:italic;
-        background:linear-gradient(90deg,#fbbf24,#f59e0b,#fde68a,#fbbf24);
-        background-size:200% auto;
-        -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-        animation:cin-gold-shimmer 3s linear infinite;
-        font-family:'Cormorant Garamond','Cinzel',serif;
-      }
-      @keyframes cin-gold-shimmer {
-        0%   { background-position:0% center; }
-        100% { background-position:200% center; }
-      }
-      .cin-content.active .cin-h-line { opacity:1; transform:translateY(0); transition-delay:0.22s; }
-      .cin-content.active .cin-h-em   { opacity:1; transform:translateY(0); transition-delay:0.38s; }
-
-      /* Sub */
-      .cin-sub {
-        font-size:clamp(14px,1.7vw,17px); color:rgba(255,255,255,0.85);
-        line-height:1.65; margin-bottom:30px; max-width:520px;
-        text-shadow:0 1px 8px rgba(0,0,0,.4);
-        opacity:0; transform:translateY(18px);
-        transition:opacity 0.6s ease, transform 0.6s ease;
-      }
-      .cin-content.active .cin-sub { opacity:1; transform:translateY(0); transition-delay:0.52s; }
-
-      /* Buttons */
-      .cin-btns {
-        display:flex; gap:14px; flex-wrap:wrap; margin-bottom:26px;
-        opacity:0; transform:translateY(16px);
-        transition:opacity 0.6s ease, transform 0.6s ease;
-      }
-      .cin-content.active .cin-btns { opacity:1; transform:translateY(0); transition-delay:0.65s; }
-      .cin-btn-primary {
-        padding:14px 30px;
-        background:linear-gradient(135deg,#b8860b,#d4a017,#fbbf24);
-        color:#0a1640; font-weight:800; font-size:14px;
-        border:none; border-radius:50px; cursor:pointer;
-        box-shadow:0 6px 28px rgba(184,134,11,0.55);
-        transition:transform 0.2s, box-shadow 0.2s;
-        white-space:nowrap; letter-spacing:0.2px;
-      }
-      .cin-btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 36px rgba(184,134,11,0.7); }
-      .cin-btn-ghost {
-        padding:13px 28px;
-        background:rgba(255,255,255,0.1); color:#fff;
-        font-weight:700; font-size:14px;
-        border:1.5px solid rgba(255,255,255,0.45); border-radius:50px;
-        cursor:pointer; backdrop-filter:blur(8px);
-        transition:background 0.2s, border-color 0.2s, transform 0.2s;
-        white-space:nowrap;
-      }
-      .cin-btn-ghost:hover { background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.75); transform:translateY(-2px); }
-
-      /* Trust row */
-      .cin-trust-row {
-        display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-        font-size:12px; color:rgba(255,255,255,0.62); font-weight:600; letter-spacing:0.3px;
-        opacity:0; transform:translateY(12px);
-        transition:opacity 0.6s ease, transform 0.6s ease;
-      }
-      .cin-content.active .cin-trust-row { opacity:1; transform:translateY(0); transition-delay:0.78s; }
-      .cin-tr-dot { color:#fbbf24; font-size:7px; }
-
-      /* ── Counter ── */
-      .cin-counter {
-        position:absolute; right:52px; bottom:110px; z-index:20;
-        display:flex; flex-direction:column; align-items:center; gap:4px;
-        pointer-events:none;
-      }
-      .cin-counter-cur { font-size:34px; font-weight:800; color:#fff; line-height:1; font-family:'Cinzel',serif; }
-      .cin-counter-sep { width:1px; height:36px; background:linear-gradient(to bottom,rgba(255,255,255,0.55),transparent); }
-      .cin-counter-tot { font-size:13px; font-weight:600; color:rgba(255,255,255,0.4); font-family:'Cinzel',serif; }
-
-      /* ── Arrows ── */
-      .cin-arrow {
-        position:absolute; top:50%; z-index:20; transform:translateY(-50%);
-        width:48px; height:48px;
-        background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.25);
-        border-radius:50%; color:#fff; cursor:pointer;
-        display:flex; align-items:center; justify-content:center;
-        backdrop-filter:blur(8px);
-        transition:background 0.2s, transform 0.25s;
-      }
-      .cin-arrow:hover { background:rgba(255,255,255,0.22); border-color:rgba(255,255,255,0.6); transform:translateY(-50%) scale(1.1); }
-      .cin-arrow svg { width:20px; height:20px; }
-      .cin-prev { left:28px; }
-      .cin-next { right:28px; }
-
-      /* ── Ring-progress dots ── */
-      .cin-nav {
-        position:absolute; bottom:32px; left:50%; z-index:20;
-        transform:translateX(-50%);
-        display:flex; gap:14px; align-items:center;
-      }
-      .cin-dot {
-        position:relative; width:36px; height:36px;
-        background:none; border:none; cursor:pointer;
-        display:flex; align-items:center; justify-content:center; padding:0;
-      }
-      .cin-dot-ring { position:absolute; inset:0; transform:rotate(-90deg); }
-      .cin-dot-track { fill:none; stroke:rgba(255,255,255,0.2); stroke-width:2; }
-      .cin-dot-fill {
-        fill:none; stroke:#fbbf24; stroke-width:2.5; stroke-linecap:round;
-        stroke-dasharray:94.25; stroke-dashoffset:94.25;
-      }
-      .cin-dot.active .cin-dot-fill { animation:cin-ring-progress var(--cin-dur,6000ms) linear forwards; }
-      @keyframes cin-ring-progress { from{stroke-dashoffset:94.25;} to{stroke-dashoffset:0;} }
-      .cin-dot-inner {
-        width:8px; height:8px; border-radius:50%;
-        background:rgba(255,255,255,0.35); position:relative; z-index:1;
-        transition:background 0.3s, transform 0.3s;
-      }
-      .cin-dot.active .cin-dot-inner { background:#fbbf24; transform:scale(1.25); }
-
-      /* ── Scroll hint ── */
-      .cin-scroll-hint {
-        position:absolute; bottom:32px; right:52px; z-index:20;
-        display:flex; flex-direction:column; align-items:center; gap:5px;
-        color:rgba(255,255,255,0.4); font-size:9.5px;
-        font-weight:700; letter-spacing:2px; text-transform:uppercase;
-        animation:cin-scroll-bob 2.5s ease-in-out infinite;
-        pointer-events:none;
-      }
-      @keyframes cin-scroll-bob { 0%,100%{opacity:.4;transform:translateY(0);} 50%{opacity:.85;transform:translateY(5px);} }
-      .cin-scroll-mouse { width:20px; height:30px; border:1.5px solid rgba(255,255,255,0.3); border-radius:10px; display:flex; justify-content:center; padding-top:5px; }
-      .cin-scroll-wheel { width:3px; height:6px; border-radius:2px; background:rgba(255,255,255,0.5); animation:cin-wheel 1.8s ease-in-out infinite; }
-      @keyframes cin-wheel { 0%{transform:translateY(0);opacity:1;} 80%{transform:translateY(9px);opacity:0;} 100%{transform:translateY(0);opacity:0;} }
-
-      /* ── Mute btn ── */
-      .cin-mute-btn {
-        position:absolute; top:18px; right:18px; z-index:25;
-        background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.2);
-        border-radius:50%; width:38px; height:38px; font-size:16px;
-        cursor:pointer; display:flex; align-items:center; justify-content:center;
-        backdrop-filter:blur(6px); transition:background 0.2s; color:#fff;
-      }
-      .cin-mute-btn:hover { background:rgba(0,0,0,0.65); }
-
-      /* ── Reduced motion ── */
-      @media (prefers-reduced-motion:reduce) {
-        .cin-kb, .cin-kb.kb-animate[data-kb] { animation:none !important; transform:scale(1.05) !important; }
-        .cin-h-line,.cin-h-em,.cin-sub,.cin-btns,.cin-trust-row,.cin-eyebrow { transition:none !important; opacity:1 !important; transform:none !important; }
-        .cin-h-em em { animation:none !important; -webkit-text-fill-color:#fbbf24; }
-        .cin-dot.active .cin-dot-fill { animation:none !important; stroke-dashoffset:0; }
-        .cin-scroll-hint { animation:none !important; }
-      }
-
-      /* ── Mobile ── */
-      @media (max-width:768px) {
-        .cin-hero { height:92vh; min-height:520px; }
-        .cin-content { padding:0 22px 100px; align-items:flex-end; }
-        .cin-content-inner { max-width:100%; }
-        .cin-counter,.cin-scroll-hint { display:none; }
-        .cin-trust-row { display:none; }
-        .cin-arrow { width:38px; height:38px; }
-        .cin-prev { left:12px; }
-        .cin-next { right:12px; }
-      }
-      @media (max-width:480px) {
-        .cin-btns { flex-direction:column; gap:10px; }
-        .cin-btn-primary,.cin-btn-ghost { width:100%; text-align:center; justify-content:center; }
-        .cin-arrow { display:none; }
-        .cin-nav { bottom:24px; }
-      }
-      </style>
+      <!-- ===== END HERO SLIDER ===== -->
 
       <section class="hero">
         <div class="hero-l">
@@ -1281,12 +928,12 @@
       <div class="gal-stat-strip">
         <div class="gal-stat-inner">
           <div class="gal-stat-item">
-            <span class="gal-stat-num" id="gal-stat-total">36</span>
+            <span class="gal-stat-num" id="gal-stat-total">—</span>
             <span class="gal-stat-label">Total Photos</span>
           </div>
           <div class="gal-stat-divider"></div>
           <div class="gal-stat-item">
-            <span class="gal-stat-num">12</span>
+            <span class="gal-stat-num" id="gal-stat-cats">—</span>
             <span class="gal-stat-label">Categories</span>
           </div>
           <div class="gal-stat-divider"></div>
@@ -1810,7 +1457,7 @@
   <a href="admin/index.html" style="position:fixed;bottom:10px;right:14px;font-size:10px;color:rgba(0,0,0,0.15);text-decoration:none;z-index:50;" title="Admin">⚙</a>
 
   <script src="assets/js/main.js"></script>
-  <script src="gallery-integration-patch.js"></script>
+  <!-- gallery-integration-patch.js removed: gallery DB fetch now built into main.js -->
 </body>
 
 </html>
