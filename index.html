@@ -122,7 +122,8 @@
 
         <div class="hs-slide" data-slide="1">
           <div class="hs-bg" style="background-image:url('/assets/images/school_image.png')"></div>
-          <div class="hs-overlay" style="background:linear-gradient(120deg,rgba(15,32,87,0.88) 0%,rgba(184,134,11,0.45) 100%)"></div>
+          <div class="hs-overlay"
+            style="background:linear-gradient(120deg,rgba(15,32,87,0.88) 0%,rgba(184,134,11,0.45) 100%)"></div>
           <div class="hs-content">
             <span class="hs-pill">Sainik Discipline · CBSE Curriculum</span>
             <h2 class="hs-heading">
@@ -139,7 +140,8 @@
 
         <div class="hs-slide" data-slide="2">
           <div class="hs-bg" style="background-image:url('/assets/images/school_image_1.jpeg')"></div>
-          <div class="hs-overlay" style="background:linear-gradient(120deg,rgba(89, 129, 248, 0.769) 0%,rgba(255, 240, 174, 0.2) 100%)"></div>
+          <div class="hs-overlay"
+            style="background:linear-gradient(120deg,rgba(89, 129, 248, 0.769) 0%,rgba(255, 240, 174, 0.2) 100%)"></div>
           <div class="hs-content">
             <span class="hs-pill">Admissions Open · 2026–27 Session</span>
             <h2 class="hs-heading">
@@ -166,7 +168,9 @@
         </div>
 
         <!-- Progress bar -->
-        <div class="hs-progress"><div class="hs-progress-bar" id="hs-progress-bar"></div></div>
+        <div class="hs-progress">
+          <div class="hs-progress-bar" id="hs-progress-bar"></div>
+        </div>
       </section>
       <!-- ===== END HERO SLIDER ===== -->
 
@@ -875,45 +879,115 @@
 
       <!-- GALLERY HERO BANNER -->
       <div class="gal-hero-banner" id="gal-hero-banner">
-        <!-- Rotating background slides -->
+
+        <!-- Background slides -->
         <div class="gal-hero-slides" id="gal-hero-slides">
-          <div class="gal-hero-slide active" style="background:linear-gradient(135deg,#0f2057 0%,#1a3a96 50%,#b88c0b 100%);">
+          <div class="gal-hero-slide active"
+            style="background:linear-gradient(145deg,#3b1a08 0%,#7a3010 45%,#c45c10 100%);">
             <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image.png')"></div>
           </div>
-          <div class="gal-hero-slide" style="background:linear-gradient(135deg,#1a3a96 0%,#0f2057 60%,#2e6b2e 100%);">
+          <div class="gal-hero-slide" style="background:linear-gradient(145deg,#5c2008 0%,#3b1a08 55%,#8a4010 100%);">
             <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image_1.jpeg')"></div>
           </div>
-          <div class="gal-hero-slide" style="background:linear-gradient(135deg,#b88c0b 0%,#0f2057 70%,#1a3a96 100%);">
+          <div class="gal-hero-slide" style="background:linear-gradient(145deg,#c45c10 0%,#7a3010 50%,#3b1a08 100%);">
             <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image.png')"></div>
           </div>
         </div>
 
-        <!-- Rotating watermark -->
-        <div class="gal-watermark-wrap" id="gal-watermark-wrap">
-          <div class="gal-watermark">
-            <span class="gal-wm-text">Colonel's Sainik Vidyalaya</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Madhepura, Bihar</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Cradle For Excellence</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">CBSE School</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Colonel's Sainik Vidyalaya</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Madhepura, Bihar</span>
-            <span class="gal-wm-sep">✦</span>
-            <span class="gal-wm-text">Cradle For Excellence</span>
-            <span class="gal-wm-sep">✦</span>
-          </div>
-        </div>
+        <!-- Saffron glow behind mandala -->
+        <div class="gal-mandala-glow"></div>
 
-        <!-- Overlay content -->
+        <!-- Rotating mandala corner watermark -->
+        <div class="gal-mandala-wrap" id="gal-mandala-wrap">
+
+          <!-- Outer ring — slow CW -->
+          <svg class="gal-mandala-outer" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="130" cy="130" r="126" stroke="rgba(245,168,32,0.30)" stroke-width="1" />
+            <circle cx="130" cy="130" r="118" stroke="rgba(245,168,32,0.15)" stroke-width="0.6" />
+            <!-- 16 tick marks on outer ring -->
+            <line x1="130" y1="4" x2="130" y2="18" stroke="rgba(245,168,32,0.45)" stroke-width="1.2" />
+            <line x1="130" y1="242" x2="130" y2="256" stroke="rgba(245,168,32,0.45)" stroke-width="1.2" />
+            <line x1="4" y1="130" x2="18" y2="130" stroke="rgba(245,168,32,0.45)" stroke-width="1.2" />
+            <line x1="242" y1="130" x2="256" y2="130" stroke="rgba(245,168,32,0.45)" stroke-width="1.2" />
+            <line x1="39" y1="39" x2="49" y2="49" stroke="rgba(245,168,32,0.35)" stroke-width="1" />
+            <line x1="211" y1="39" x2="221" y2="49" stroke="rgba(245,168,32,0.35)" stroke-width="1" />
+            <line x1="39" y1="221" x2="49" y2="211" stroke="rgba(245,168,32,0.35)" stroke-width="1" />
+            <line x1="211" y1="221" x2="221" y2="211" stroke="rgba(245,168,32,0.35)" stroke-width="1" />
+            <!-- 8 petals on outer -->
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(0   130 130)" />
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(45  130 130)" />
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(90  130 130)" />
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(135 130 130)" />
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(180 130 130)" />
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(225 130 130)" />
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(270 130 130)" />
+            <ellipse cx="130" cy="22" rx="7" ry="14" fill="rgba(245,168,32,0.22)" transform="rotate(315 130 130)" />
+          </svg>
+
+          <!-- Mid ring — medium CCW -->
+          <svg class="gal-mandala-mid" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="96" stroke="rgba(245,168,32,0.28)" stroke-width="0.8" />
+            <circle cx="100" cy="100" r="86" stroke="rgba(245,168,32,0.14)" stroke-width="0.5" stroke-dasharray="3 5" />
+            <!-- 12 diamond points -->
+            <polygon points="100,4  106,94  100,100  94,94" fill="rgba(245,168,32,0.32)" />
+            <polygon points="100,196 106,106 100,100 94,106" fill="rgba(245,168,32,0.32)" />
+            <polygon points="4,100  94,106  100,100 94,94" fill="rgba(245,168,32,0.32)" />
+            <polygon points="196,100 106,106 100,100 106,94" fill="rgba(245,168,32,0.32)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(30  100 100)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(60  100 100)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(120 100 100)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(150 100 100)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(210 100 100)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(240 100 100)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(300 100 100)" />
+            <polygon points="100,4  106,94  100,100 94,94" fill="rgba(245,168,32,0.32)"
+              transform="rotate(330 100 100)" />
+          </svg>
+
+          <!-- Inner ring — fast CW -->
+          <svg class="gal-mandala-inner" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="56" stroke="rgba(245,168,32,0.40)" stroke-width="1" />
+            <circle cx="60" cy="60" r="44" stroke="rgba(245,168,32,0.22)" stroke-width="0.7" />
+            <circle cx="60" cy="60" r="30" stroke="rgba(245,168,32,0.25)" stroke-width="0.7" />
+            <circle cx="60" cy="60" r="14" stroke="rgba(245,168,32,0.35)" stroke-width="0.8" />
+            <!-- Cross lines -->
+            <line x1="60" y1="4" x2="60" y2="116" stroke="rgba(245,168,32,0.20)" stroke-width="0.5" />
+            <line x1="4" y1="60" x2="116" y2="60" stroke="rgba(245,168,32,0.20)" stroke-width="0.5" />
+            <line x1="17" y1="17" x2="103" y2="103" stroke="rgba(245,168,32,0.16)" stroke-width="0.5" />
+            <line x1="103" y1="17" x2="17" y2="103" stroke="rgba(245,168,32,0.16)" stroke-width="0.5" />
+            <!-- 4 lotus petals -->
+            <ellipse cx="60" cy="32" rx="5" ry="10" fill="rgba(245,168,32,0.38)" />
+            <ellipse cx="60" cy="32" rx="5" ry="10" fill="rgba(245,168,32,0.38)" transform="rotate(90  60 60)" />
+            <ellipse cx="60" cy="32" rx="5" ry="10" fill="rgba(245,168,32,0.38)" transform="rotate(180 60 60)" />
+            <ellipse cx="60" cy="32" rx="5" ry="10" fill="rgba(245,168,32,0.38)" transform="rotate(270 60 60)" />
+            <!-- 4 diagonal petals -->
+            <ellipse cx="60" cy="32" rx="4" ry="8" fill="rgba(245,168,32,0.25)" transform="rotate(45  60 60)" />
+            <ellipse cx="60" cy="32" rx="4" ry="8" fill="rgba(245,168,32,0.25)" transform="rotate(135 60 60)" />
+            <ellipse cx="60" cy="32" rx="4" ry="8" fill="rgba(245,168,32,0.25)" transform="rotate(225 60 60)" />
+            <ellipse cx="60" cy="32" rx="4" ry="8" fill="rgba(245,168,32,0.25)" transform="rotate(315 60 60)" />
+            <!-- Centre dot -->
+            <circle cx="60" cy="60" r="5" fill="rgba(245,168,32,0.60)" />
+            <circle cx="60" cy="60" r="2" fill="rgba(245,168,32,0.90)" />
+          </svg>
+
+        </div><!-- /.gal-mandala-wrap -->
+
+        <!-- Overlay -->
         <div class="gal-hero-overlay"></div>
+
+        <!-- Content -->
         <div class="gal-hero-content">
           <span class="gal-hero-label">Campus Life · Memories · Milestones</span>
           <h1 class="gal-hero-title">Our <em>Gallery</em></h1>
-          <p class="gal-hero-sub">A vivid glimpse into the vibrant life, achievements, and spirit of Colonel's Sainik Vidyalaya.</p>
+          <p class="gal-hero-sub">A vivid glimpse into the vibrant life, achievements, and spirit of Colonel's Sainik
+            Vidyalaya.</p>
         </div>
 
         <!-- Slide dots -->
@@ -957,15 +1031,18 @@
             <button class="gal-filter-btn" data-cat="Events" onclick="filterGallery('Events')">🎉 Events</button>
             <button class="gal-filter-btn" data-cat="Campus" onclick="filterGallery('Campus')">🏛️ Campus</button>
             <button class="gal-filter-btn" data-cat="Meetings" onclick="filterGallery('Meetings')">🤝 Meetings</button>
-            <button class="gal-filter-btn" data-cat="Community" onclick="filterGallery('Community')">👥 Community</button>
+            <button class="gal-filter-btn" data-cat="Community" onclick="filterGallery('Community')">👥
+              Community</button>
             <button class="gal-filter-btn" data-cat="Awards" onclick="filterGallery('Awards')">🏆 Awards</button>
             <button class="gal-filter-btn" data-cat="Sports" onclick="filterGallery('Sports')">⚽ Sports</button>
             <button class="gal-filter-btn" data-cat="Hostel" onclick="filterGallery('Hostel')">🏠 Hostel</button>
             <button class="gal-filter-btn" data-cat="Labs" onclick="filterGallery('Labs')">🔬 Labs</button>
             <button class="gal-filter-btn" data-cat="Arts" onclick="filterGallery('Arts')">🎨 Arts</button>
-            <button class="gal-filter-btn" data-cat="Achievements" onclick="filterGallery('Achievements')">🌟 Achievements</button>
+            <button class="gal-filter-btn" data-cat="Achievements" onclick="filterGallery('Achievements')">🌟
+              Achievements</button>
             <button class="gal-filter-btn" data-cat="Parade" onclick="filterGallery('Parade')">🪖 Parade</button>
-            <button class="gal-filter-btn" data-cat="Classroom" onclick="filterGallery('Classroom')">📚 Classroom</button>
+            <button class="gal-filter-btn" data-cat="Classroom" onclick="filterGallery('Classroom')">📚
+              Classroom</button>
           </div>
         </div>
       </section>
@@ -1454,7 +1531,9 @@
   <!-- ===================== ADMIN VIEW ===================== -->
 
   <!-- Discreet admin access link (bottom of page, no label) -->
-  <a href="admin/index.html" style="position:fixed;bottom:10px;right:14px;font-size:10px;color:rgba(0,0,0,0.15);text-decoration:none;z-index:50;" title="Admin">⚙</a>
+  <a href="admin/index.html"
+    style="position:fixed;bottom:10px;right:14px;font-size:10px;color:rgba(0,0,0,0.15);text-decoration:none;z-index:50;"
+    title="Admin">⚙</a>
 
   <script src="assets/js/main.js"></script>
   <!-- gallery-integration-patch.js removed: gallery DB fetch now built into main.js -->
