@@ -29,18 +29,6 @@
 
 <body>
 
-  <!-- PAGE LOADER -->
-  <div id="page-loader">
-    <div class="pl-inner">
-      <img src="assets/images/logo.png" alt="Colonel's Sainik Vidyalaya" class="pl-logo">
-      <div class="pl-school-name">Colonel's Sainik Vidyalaya</div>
-      <div class="pl-tagline">Cradle For Excellence</div>
-      <div class="pl-bar-wrap">
-        <div class="pl-bar" id="pl-bar"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- TOAST -->
   <div class="toast" id="toast">✅ <span id="toast-msg">Saved successfully!</span></div>
 
@@ -1549,44 +1537,6 @@
 
   <script src="assets/js/main.js"></script>
   <!-- gallery-integration-patch.js removed: gallery DB fetch now built into main.js -->
-
-  <!-- PAGE LOADER SCRIPT -->
-  <script>
-    (function () {
-      var loader = document.getElementById('page-loader');
-      var bar    = document.getElementById('pl-bar');
-      if (!loader || !bar) return;
-
-      var progress = 0;
-      var done = false;
-
-      // Animate bar to ~85% while page loads
-      var tick = setInterval(function () {
-        if (done) return;
-        var step = progress < 50 ? 4 : progress < 75 ? 2 : 0.6;
-        progress = Math.min(progress + step, 88);
-        bar.style.width = progress + '%';
-      }, 60);
-
-      function finish() {
-        if (done) return;
-        done = true;
-        clearInterval(tick);
-        bar.style.width = '100%';
-        setTimeout(function () {
-          loader.classList.add('pl-hidden');
-        }, 380);
-      }
-
-      if (document.readyState === 'complete') {
-        finish();
-      } else {
-        window.addEventListener('load', finish);
-        // Fallback: hide after 4s even if load never fires
-        setTimeout(finish, 4000);
-      }
-    })();
-  </script>
 </body>
 
 </html>
