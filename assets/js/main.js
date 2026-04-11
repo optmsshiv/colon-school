@@ -1382,214 +1382,73 @@ function deleteApplication(i) {
 }
 
 // ===================== HERO SLIDER =====================
-// ═══════════════════════════════════════════════════════
-// CINEMATIC HERO CONTROLLER
-// Ken Burns image slider + video-ready + particle shimmer
-// ═══════════════════════════════════════════════════════
 (function () {
-  const DURATION   = 6000;   // ms per slide
-  const TOTAL      = 3;
-  let   current    = 0;
-  let   autoTimer  = null;
-  let   videoMode  = false;
-  let   muted      = true;
+  let current = 0;
+  const total = 3;
+  let autoTimer = null;
+  let progressTimer = null;
+  const DURATION = 5000;
 
-  // ── CSS duration var for ring-progress animation ──
-  function setDurVar() {
-    const nav = document.getElementById('cin-nav');
-    if (nav) nav.style.setProperty('--cin-dur', DURATION + 'ms');
-  }
+  function getSlides() { return document.querySelectorAll('.hs-slide'); }
+  function getDots() { return document.querySelectorAll('.hs-dot'); }
+  function getBar() { return document.getElementById('hs-progress-bar'); }
 
-  // ── Ken Burns: restart animation on active slide ──
-  function restartKB(slideEl) {
-    const kb = slideEl.querySelector('.cin-kb');
-    if (!kb) return;
-    kb.classList.remove('kb-animate');
-    // Force reflow
-    void kb.offsetWidth;
-    kb.classList.add('kb-animate');
-  }
-
-  // ── Go to slide ──
   function goTo(idx) {
-    const slides   = document.querySelectorAll('.cin-slide');
-    const contents = document.querySelectorAll('.cin-content');
-    const dots     = document.querySelectorAll('.cin-dot');
+    const slides = getSlides();
+    const dots = getDots();
     if (!slides.length) return;
-
-    // Deactivate current
     slides[current].classList.remove('active');
-    contents[current] && contents[current].classList.remove('active');
     dots[current] && dots[current].classList.remove('active');
-
-    current = (idx + TOTAL) % TOTAL;
-
-    // Activate new
+    current = (idx + total) % total;
     slides[current].classList.add('active');
-    contents[current] && contents[current].classList.add('active');
-
-    // Restart KB animation on new slide (skip for video mode)
-    if (!videoMode) restartKB(slides[current]);
-
-    // Dots: reset and restart ring animation
-    dots.forEach((d, i) => {
-      d.classList.remove('active');
-      // Force animation restart
-      const fill = d.querySelector('.cin-dot-fill');
-      if (fill) { fill.style.animation = 'none'; void fill.offsetWidth; fill.style.animation = ''; }
-    });
     dots[current] && dots[current].classList.add('active');
+    resetProgress();
+  }
 
-    // Counter
-    const cur = document.getElementById('cin-counter-cur');
-    if (cur) cur.textContent = String(current + 1).padStart(2, '0');
+  function resetProgress() {
+    const bar = getBar();
+    if (!bar) return;
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        bar.style.transition = `width ${DURATION}ms linear`;
+        bar.style.width = '100%';
+      });
+    });
   }
 
   function startAuto() {
-    clearInterval(autoTimer);
+    stopAuto();
     autoTimer = setInterval(() => goTo(current + 1), DURATION);
-  }
-  function stopAuto() { clearInterval(autoTimer); }
-
-  // Public API
-  window.cinNext = function () { goTo(current + 1); stopAuto(); startAuto(); };
-  window.cinPrev = function () { goTo(current - 1); stopAuto(); startAuto(); };
-  window.cinGo   = function (i) { goTo(i);          stopAuto(); startAuto(); };
-
-  // ── Video mode ──
-  function initVideo(hero) {
-    const wrap   = document.getElementById('cin-video-wrap');
-    const video  = document.getElementById('cin-video');
-    const muteBtn = document.getElementById('cin-mute-btn');
-    const slides = document.getElementById('cin-slides');
-
-    if (!wrap || !video) return;
-
-    // Inject sources
-    const mp4  = hero.dataset.videoSrcMp4;
-    const webm = hero.dataset.videoSrcWebm;
-    if (webm) { const s = document.createElement('source'); s.src = webm; s.type = 'video/webm'; video.appendChild(s); }
-    if (mp4)  { const s = document.createElement('source'); s.src = mp4;  s.type = 'video/mp4';  video.appendChild(s); }
-
-    video.load();
-    video.addEventListener('canplay', () => {
-      wrap.classList.add('active');
-      if (slides) slides.style.display = 'none'; // hide KB slides
-      if (muteBtn) muteBtn.style.display = 'flex';
-      videoMode = true;
-      // Video replaces auto-slide for BG; keep content slides cycling
-      startAuto();
-    }, { once: true });
-
-    video.addEventListener('error', () => {
-      // Video failed — fall back to KB slides silently
-      console.warn('[CinHero] Video failed, using Ken Burns fallback');
-      wrap.style.display = 'none';
-    });
+    resetProgress();
   }
 
-  // ── Mute toggle ──
-  window.cinToggleMute = function () {
-    const video   = document.getElementById('cin-video');
-    const muteBtn = document.getElementById('cin-mute-btn');
-    if (!video) return;
-    muted = !muted;
-    video.muted = muted;
-    if (muteBtn) muteBtn.textContent = muted ? '🔇' : '🔊';
-  };
-
-  // ── Particle shimmer ──
-  function initParticles() {
-    const canvas = document.getElementById('cin-particles');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
-
-    function resize() {
-      W = canvas.width  = canvas.offsetWidth;
-      H = canvas.height = canvas.offsetHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Spawn particles
-    for (let i = 0; i < 55; i++) {
-      particles.push({
-        x: Math.random() * 1200,
-        y: Math.random() * 800,
-        r: Math.random() * 1.6 + 0.3,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: -Math.random() * 0.5 - 0.15,
-        alpha: Math.random() * 0.6 + 0.1,
-        pulse: Math.random() * Math.PI * 2,
-      });
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      const t = Date.now() * 0.001;
-      particles.forEach(p => {
-        p.x  += p.vx;
-        p.y  += p.vy;
-        p.pulse += 0.02;
-        if (p.y < -5)  p.y = H + 5;
-        if (p.x < -5)  p.x = W + 5;
-        if (p.x > W+5) p.x = -5;
-
-        const a = p.alpha * (0.55 + 0.45 * Math.sin(p.pulse));
-        ctx.beginPath();
-        ctx.arc((p.x / 1200) * W, (p.y / 800) * H, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(251,191,36,${a})`;
-        ctx.fill();
-      });
-      requestAnimationFrame(draw);
-    }
-    draw();
+  function stopAuto() {
+    clearInterval(autoTimer);
   }
 
-  // ── Touch swipe ──
-  function initSwipe(hero) {
-    let tx = 0;
-    hero.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
-    hero.addEventListener('touchend',   e => {
-      const dx = e.changedTouches[0].clientX - tx;
-      if (Math.abs(dx) > 44) { dx < 0 ? cinNext() : cinPrev(); }
-    }, { passive: true });
-  }
+  window.sliderNext = function () { goTo(current + 1); stopAuto(); startAuto(); };
+  window.sliderPrev = function () { goTo(current - 1); stopAuto(); startAuto(); };
+  window.sliderGo = function (idx) { goTo(idx); stopAuto(); startAuto(); };
 
-  // ── Init on DOM ready ──
+  // Pause on hover
   document.addEventListener('DOMContentLoaded', function () {
-    const hero = document.getElementById('cin-hero');
-    if (!hero) return;
-
-    setDurVar();
-
-    // Respect prefers-reduced-motion
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-
-    // Skip video + particles if reduced motion
-    if (!reducedMotion) {
-      // Video mode?
-      if (hero.dataset.video === 'true') {
-        initVideo(hero);
-      } else {
-        // Start KB on first slide immediately
-        const firstSlide = hero.querySelector('.cin-slide.active');
-        if (firstSlide) restartKB(firstSlide);
-      }
-      initParticles();
+    const slider = document.getElementById('hero-slider');
+    if (slider) {
+      slider.addEventListener('mouseenter', stopAuto);
+      slider.addEventListener('mouseleave', startAuto);
+      // Touch swipe support
+      let tx = 0;
+      slider.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      slider.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 40) { dx < 0 ? sliderNext() : sliderPrev(); }
+      }, { passive: true });
+      startAuto();
     }
-
-    initSwipe(hero);
-
-    // Pause on hover
-    hero.addEventListener('mouseenter', stopAuto);
-    hero.addEventListener('mouseleave', startAuto);
-
-    startAuto();
   });
 })();
-
 
 // ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', function () {
@@ -1609,291 +1468,274 @@ document.addEventListener('DOMContentLoaded', function () {
   initReveal();
   initChat();
 });
-// ═══════════════════════════════════════════════════════════
-// DYNAMIC GALLERY — Fetches live from gallery-api.php
-// Falls back to placeholder skeletons if API unavailable
-// ═══════════════════════════════════════════════════════════
+/* =========================================================
+   GALLERY PAGE — ENHANCED JS
+   ========================================================= */
 
-const GAL_HEIGHTS = [180, 220, 200, 240, 170, 210, 190, 230];
+// ---- Photo slot definitions (18 pre-defined + 18 more = 36 total across 12 categories) ----
+const GAL_SLOTS = [
+  // Events (3)
+  { title: 'Annual Day Celebration', cat: 'Events', icon: '🎉', grad: 'linear-gradient(135deg,#1a3a96,#4a6ad4)' },
+  { title: 'Independence Day Parade', cat: 'Events', icon: '🇮🇳', grad: 'linear-gradient(135deg,#0f2057,#1a3a96)' },
+  { title: 'Founder\'s Day Ceremony', cat: 'Events', icon: '🎖️', grad: 'linear-gradient(135deg,#2a4a9a,#5a7ae0)' },
+  // Campus (3)
+  { title: 'School Main Building', cat: 'Campus', icon: '🏛️', grad: 'linear-gradient(135deg,#b88c0b,#d4a017)' },
+  { title: 'School Grounds & Garden', cat: 'Campus', icon: '🌿', grad: 'linear-gradient(135deg,#1a6b1a,#2e8b2e)' },
+  { title: 'Main Entrance Gate', cat: 'Campus', icon: '🚪', grad: 'linear-gradient(135deg,#8b4513,#a0522d)' },
+  // Meetings (3)
+  { title: 'Parent-Teacher Meeting', cat: 'Meetings', icon: '🤝', grad: 'linear-gradient(135deg,#4a0e8f,#6a2ea0)' },
+  { title: 'Staff Development Session', cat: 'Meetings', icon: '📋', grad: 'linear-gradient(135deg,#0f4a6b,#1a6b8c)' },
+  { title: 'School Management Board', cat: 'Meetings', icon: '🏢', grad: 'linear-gradient(135deg,#2d4a1e,#3d6a2e)' },
+  // Community (3)
+  { title: 'Community Outreach Drive', cat: 'Community', icon: '👥', grad: 'linear-gradient(135deg,#8b1a1a,#b02020)' },
+  { title: 'Village Awareness Camp', cat: 'Community', icon: '🏘️', grad: 'linear-gradient(135deg,#4a3a0a,#6a5a1a)' },
+  { title: 'Tree Plantation Drive', cat: 'Community', icon: '🌳', grad: 'linear-gradient(135deg,#1a5a1a,#2a8a2a)' },
+  // Awards (3)
+  { title: 'Academic Excellence Awards', cat: 'Awards', icon: '🏆', grad: 'linear-gradient(135deg,#b88c0b,#d4a017)' },
+  { title: 'Sports Championship Trophy', cat: 'Awards', icon: '🥇', grad: 'linear-gradient(135deg,#0f2057,#d4a017)' },
+  { title: 'District Topper Felicitation', cat: 'Awards', icon: '🌟', grad: 'linear-gradient(135deg,#1a3a96,#b88c0b)' },
+  // Sports (3)
+  { title: 'Annual Sports Meet', cat: 'Sports', icon: '⚽', grad: 'linear-gradient(135deg,#1a6b1a,#4a9a4a)' },
+  { title: 'Cricket Match Day', cat: 'Sports', icon: '🏏', grad: 'linear-gradient(135deg,#0f2057,#2a5a96)' },
+  { title: 'Athletics & Track Events', cat: 'Sports', icon: '🏃', grad: 'linear-gradient(135deg,#8b1a1a,#cc3333)' },
+  // Hostel (3)
+  { title: 'Hostel Common Room', cat: 'Hostel', icon: '🏠', grad: 'linear-gradient(135deg,#4a2a6b,#6a4a9a)' },
+  { title: 'Dormitory Wing', cat: 'Hostel', icon: '🛏️', grad: 'linear-gradient(135deg,#0f4a6b,#1a6b9a)' },
+  { title: 'Mess Hall & Dining', cat: 'Hostel', icon: '🍽️', grad: 'linear-gradient(135deg,#8b4a1a,#b06030)' },
+  // Labs (3)
+  { title: 'Science Laboratory', cat: 'Labs', icon: '🔬', grad: 'linear-gradient(135deg,#0f5a6b,#1a7a8c)' },
+  { title: 'Computer Lab Session', cat: 'Labs', icon: '💻', grad: 'linear-gradient(135deg,#1a1a6b,#2a2a9a)' },
+  { title: 'Math Activity Lab', cat: 'Labs', icon: '📐', grad: 'linear-gradient(135deg,#2d5a1e,#3d7a2e)' },
+  // Arts (3)
+  { title: 'Art & Craft Exhibition', cat: 'Arts', icon: '🎨', grad: 'linear-gradient(135deg,#8b1a6b,#b02890)' },
+  { title: 'Cultural Dance Performance', cat: 'Arts', icon: '💃', grad: 'linear-gradient(135deg,#6b1a1a,#9a3030)' },
+  { title: 'Music & Band Practice', cat: 'Arts', icon: '🎵', grad: 'linear-gradient(135deg,#1a4a6b,#2a6a9a)' },
+  // Achievements (3)
+  { title: 'State Level Champions', cat: 'Achievements', icon: '🌟', grad: 'linear-gradient(135deg,#b88c0b,#e0b020)' },
+  { title: 'NCC Best Cadet Award', cat: 'Achievements', icon: '🎖️', grad: 'linear-gradient(135deg,#0f2057,#1a3a96)' },
+  { title: 'Academic Toppers 2026', cat: 'Achievements', icon: '📜', grad: 'linear-gradient(135deg,#1a6b1a,#2e8b2e)' },
+  // Parade (3)
+  { title: 'Republic Day Parade', cat: 'Parade', icon: '🪖', grad: 'linear-gradient(135deg,#0f2057,#3a5a96)' },
+  { title: 'Morning Drill Assembly', cat: 'Parade', icon: '🚩', grad: 'linear-gradient(135deg,#1a3a96,#4a6aaa)' },
+  { title: 'March Past Ceremony', cat: 'Parade', icon: '👨‍✈️', grad: 'linear-gradient(135deg,#2a4a0a,#3a6a1a)' },
+  // Classroom (3)
+  { title: 'Interactive Class Session', cat: 'Classroom', icon: '📚', grad: 'linear-gradient(135deg,#4a1a6b,#6a3a9a)' },
+  { title: 'Morning Assembly', cat: 'Classroom', icon: '🙏', grad: 'linear-gradient(135deg,#0f4a2a,#1a6a4a)' },
+  { title: 'Group Study Activity', cat: 'Classroom', icon: '✏️', grad: 'linear-gradient(135deg,#6b4a0a,#9a6a2a)' },
+];
 
-const CAT_ICONS = {
-  Campus:'🏫', Classrooms:'📚', Sports:'🏃', Events:'🎉',
-  Parade:'🎖️', Hostel:'🏠', Lab:'🔬', Labs:'🔬',
-  Arts:'🎨', Achievements:'🏆', Others:'📷',
-  Meetings:'🤝', Community:'👥', Awards:'🏆',
-  Classroom:'📚', Academics:'📖'
-};
-const CAT_GRADS = {
-  Campus:'linear-gradient(135deg,#b88c0b,#d4a017)',
-  Classrooms:'linear-gradient(135deg,#4a1a6b,#6a3a9a)',
-  Sports:'linear-gradient(135deg,#1a6b1a,#4a9a4a)',
-  Events:'linear-gradient(135deg,#1a3a96,#4a6ad4)',
-  Parade:'linear-gradient(135deg,#0f2057,#3a5a96)',
-  Hostel:'linear-gradient(135deg,#0f4a6b,#1a6b9a)',
-  Lab:'linear-gradient(135deg,#0f5a6b,#1a7a8c)',
-  Labs:'linear-gradient(135deg,#0f5a6b,#1a7a8c)',
-  Arts:'linear-gradient(135deg,#8b1a6b,#b02890)',
-  Achievements:'linear-gradient(135deg,#b88c0b,#e0b020)',
-  Others:'linear-gradient(135deg,#475569,#64748b)',
-};
-function catGrad(cat){ return CAT_GRADS[cat] || 'linear-gradient(135deg,#0f2057,#1a3a96)'; }
-function catIcon(cat){ return CAT_ICONS[cat] || '🖼️'; }
+// ═══════════════════════════════════════════════════════
+// GALLERY — Database-backed (fetches from gallery-api.php)
+// Falls back to placeholder slots if API unavailable.
+// ═══════════════════════════════════════════════════════
 
-// ── State ────────────────────────────────────────────────
-let _galImages   = null;   // null = not yet fetched
-let _galCats     = [];
-let _galState    = 'idle'; // idle | loading | done | error
+const GAL_HEIGHTS = [160, 200, 220, 180, 240, 190, 175, 215];
+
+// All images fetched from DB are stored here
+let _galDBImages  = null;   // null = not loaded yet
+let _galDBCats    = null;
+let _galLoadState = 'idle'; // 'idle' | 'loading' | 'done' | 'error'
 let _galActiveCat = 'all';
-let _galLightbox  = [];    // flat array for prev/next nav
 
-// ── Fetch from gallery-api.php ───────────────────────────
+// ── Fetch from gallery-api.php ─────────────────────────
 async function loadGalleryFromDB() {
-  if (_galState === 'loading') return;
-  _galState = 'loading';
-  _showGalSkeleton();
+  if (_galLoadState === 'loading') return;
+  _galLoadState = 'loading';
+
+  // Show loading skeleton
+  const grid = document.getElementById('gal-masonry-grid');
+  if (grid) {
+    grid.innerHTML = Array.from({length: 8}, (_, i) =>
+      `<div class="gal-card" style="animation-delay:${i*0.05}s;">
+         <div class="gal-card-placeholder" style="background:linear-gradient(135deg,#e2e8f0,#f1f5f9);height:${GAL_HEIGHTS[i%GAL_HEIGHTS.length]}px;">
+           <span class="gal-ph-icon" style="font-size:28px;opacity:.3;">🖼️</span>
+         </div>
+       </div>`).join('');
+  }
 
   try {
     const res  = await fetch('gallery-api.php?limit=500', { cache: 'no-cache' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
+
     if (!data.success) throw new Error(data.message || 'API error');
 
-    _galImages = data.images  || [];
-    _galCats   = data.categories || [];
-    _galState  = 'done';
+    _galDBImages  = data.images  || [];
+    _galDBCats    = data.categories || [];
+    _galLoadState = 'done';
+
+    // Dynamically rebuild filter buttons from DB categories
+    _buildGalleryFilterBar(_galDBCats);
 
     // Update stat strip
-    const stTotal = document.getElementById('gal-stat-total');
-    const stCats  = document.getElementById('gal-stat-cats');
-    if (stTotal) stTotal.textContent = _galImages.length;
-    if (stCats)  stCats.textContent  = _galCats.length;
+    const statEl = document.getElementById('gal-stat-total');
+    if (statEl) statEl.textContent = _galDBImages.length;
+    const catCountEl = document.getElementById('gal-stat-cats');
+    if (catCountEl) catCountEl.textContent = _galDBCats.length || '—';
 
-    _buildFilterBar();
     renderMasonryGallery(_galActiveCat);
 
   } catch (err) {
-    _galState  = 'error';
-    _galImages = [];
-    console.warn('[Gallery] API unavailable:', err.message);
-    _showGalError(err.message);
+    _galLoadState = 'error';
+    console.warn('[Gallery] Could not load from DB, using placeholder slots.', err.message);
+    // Fallback: render placeholder slots as before
+    _galDBImages = [];
+    renderMasonryGallery(_galActiveCat);
   }
 }
 
-// ── Loading skeleton ─────────────────────────────────────
-function _showGalSkeleton() {
-  const grid = document.getElementById('gal-masonry-grid');
-  if (!grid) return;
-  grid.innerHTML = Array.from({length: 9}, (_, i) => {
-    const h = GAL_HEIGHTS[i % GAL_HEIGHTS.length];
-    return `<div class="gal-card" style="animation-delay:${i*0.05}s;">
-      <div style="height:${h}px;background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);
-        background-size:200% 100%;animation:gal-shimmer 1.4s infinite;border-radius:inherit;"></div>
-    </div>`;
-  }).join('');
-  // Inject shimmer keyframe once
-  if (!document.getElementById('gal-shimmer-style')) {
-    const s = document.createElement('style');
-    s.id = 'gal-shimmer-style';
-    s.textContent = '@keyframes gal-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}';
-    document.head.appendChild(s);
-  }
-}
-
-// ── Error state ──────────────────────────────────────────
-function _showGalError(msg) {
-  const grid = document.getElementById('gal-masonry-grid');
-  const empty = document.getElementById('gal-empty-msg');
-  if (grid) grid.innerHTML = '';
-  if (empty) {
-    empty.style.display = '';
-    empty.innerHTML = `<div style="font-size:48px;margin-bottom:12px;">⚠️</div>
-      <p style="font-weight:600;margin-bottom:8px;">Could not load gallery</p>
-      <p style="font-size:12px;opacity:.7;margin-bottom:18px;">${msg}</p>
-      <button onclick="retryGallery()" style="padding:10px 24px;background:#0f2057;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">↺ Retry</button>`;
-  }
-}
-window.retryGallery = function() {
-  _galState = 'idle';
-  loadGalleryFromDB();
-};
-
-// ── Build filter bar dynamically from DB categories ──────
-function _buildFilterBar() {
+// ── Build filter buttons dynamically from DB categories ─
+function _buildGalleryFilterBar(cats) {
   const bar = document.getElementById('gal-filter-bar');
   if (!bar) return;
 
-  const allBtn = `<button class="gal-filter-btn ${_galActiveCat==='all'?'active':''}" data-cat="all" onclick="filterGallery('all')">
-    All Photos <span class="gal-filter-count">${_galImages.length}</span>
-  </button>`;
+  // Category → icon map (matches admin)
+  const catIcons = {
+    Campus:'🏫', Classrooms:'📚', Sports:'🏃', Events:'🎉', Parade:'🎖️',
+    Hostel:'🏠', Lab:'🔬', Labs:'🔬', Arts:'🎨', Achievements:'🏆',
+    Others:'📷', Meetings:'🤝', Community:'👥', Awards:'🏆',
+    Classroom:'📚', Academics:'📖', 'Sainik Training':'🪖'
+  };
 
-  const catBtns = _galCats.map(c => {
+  const allBtn = `<button class="gal-filter-btn ${_galActiveCat==='all'?'active':''}" data-cat="all" onclick="filterGallery('all')">All Photos <span style="opacity:.65;font-size:11px;">(${_galDBImages ? _galDBImages.length : ''})</span></button>`;
+
+  const catBtns = cats.map(c => {
+    const icon = catIcons[c.category] || '🖼️';
     const active = _galActiveCat === c.category ? 'active' : '';
-    return `<button class="gal-filter-btn ${active}" data-cat="${c.category}" onclick="filterGallery('${c.category}')">
-      ${catIcon(c.category)} ${c.category} <span class="gal-filter-count">${c.cnt}</span>
-    </button>`;
+    return `<button class="gal-filter-btn ${active}" data-cat="${c.category}" onclick="filterGallery('${c.category}')">${icon} ${c.category} <span style="opacity:.65;font-size:11px;">(${c.cnt})</span></button>`;
   }).join('');
 
   bar.innerHTML = allBtn + catBtns;
 }
 
-// ── Render masonry grid ──────────────────────────────────
+// ── Render masonry grid ────────────────────────────────
 function renderMasonryGallery(filterCat) {
-  const grid  = document.getElementById('gal-masonry-grid');
-  const empty = document.getElementById('gal-empty-msg');
+  const grid     = document.getElementById('gal-masonry-grid');
+  const emptyMsg = document.getElementById('gal-empty-msg');
   if (!grid) return;
 
-  // Trigger fetch if not loaded yet
-  if (_galState === 'idle') { loadGalleryFromDB(); return; }
-  if (_galState === 'loading') return;
+  // ── If DB not loaded yet, trigger load ──
+  if (_galLoadState === 'idle') {
+    loadGalleryFromDB();
+    return;
+  }
+  if (_galLoadState === 'loading') return; // skeleton already shown
 
-  const items = _galImages || [];
-  const filtered = filterCat === 'all'
-    ? items
-    : items.filter(img => img.category === filterCat);
+  // ── Build item list ──
+  // If we have DB images, use ONLY those (no phantom placeholders).
+  // If DB load failed/empty, fall back to placeholder slots so page isn't blank.
+  let items;
+
+  if (_galDBImages && _galDBImages.length > 0) {
+    // Real DB images → map to unified shape
+    items = _galDBImages.map(img => ({
+      title:       img.caption || 'Photo',
+      description: img.description || '',
+      cat:         img.category || 'Others',
+      realUrl:     img.url,
+      thumbUrl:    img.thumb || img.url,
+      icon:        '🖼️',
+      grad:        'linear-gradient(135deg,#0f2057,#1a3a96)',
+    }));
+  } else {
+    // Fallback placeholder slots (no real images available)
+    items = GAL_SLOTS.map(s => ({
+      title:       s.title,
+      description: '',
+      cat:         s.cat,
+      realUrl:     null,
+      thumbUrl:    null,
+      icon:        s.icon,
+      grad:        s.grad,
+    }));
+  }
+
+  // Apply category filter
+  const filtered = filterCat === 'all' ? items : items.filter(s => s.cat === filterCat);
 
   if (!filtered.length) {
     grid.innerHTML = '';
-    if (empty) {
-      empty.style.display = '';
-      empty.innerHTML = `<div style="font-size:48px;margin-bottom:12px;">🖼️</div>
-        <p>${filterCat === 'all' ? 'No photos uploaded yet.' : 'No photos in this category yet.'}</p>
-        ${filterCat !== 'all' ? '<button onclick="filterGallery('all')" style="margin-top:14px;padding:9px 22px;background:#0f2057;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">View All Photos</button>' : ''}`;
-    }
+    if (emptyMsg) emptyMsg.style.display = '';
     return;
   }
-  if (empty) empty.style.display = 'none';
+  if (emptyMsg) emptyMsg.style.display = 'none';
 
-  // Store for lightbox navigation
-  _galLightbox = filtered;
+  grid.innerHTML = filtered.map((s, i) => {
+    const h       = GAL_HEIGHTS[i % GAL_HEIGHTS.length];
+    const hasReal = !!s.realUrl;
+    // Escape for inline onclick attr
+    const safeUrl   = hasReal ? s.realUrl.replace(/'/g, "\\'") : '';
+    const safeTitle = s.title.replace(/'/g, "\\'");
+    const safeDesc  = s.description.replace(/'/g, "\\'");
 
-  grid.innerHTML = filtered.map((img, i) => {
-    const h    = GAL_HEIGHTS[i % GAL_HEIGHTS.length];
-    const grad = catGrad(img.category);
-    const icon = catIcon(img.category);
-    const safe = (s) => (s||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
-
-    return `<div class="gal-card gal-anim" style="animation-delay:${(i%9)*0.05}s;"
-         onclick="openGalLightbox(${i})">
-      <img src="${img.thumb || img.url}"
-           alt="${safe(img.caption)}"
-           loading="lazy"
-           style="height:${h}px;width:100%;object-fit:cover;display:block;"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="gal-card-placeholder" style="background:${grad};height:${h}px;display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-        <span style="font-size:32px;">${icon}</span>
-        <span style="font-size:12px;color:rgba(255,255,255,.8);text-align:center;padding:0 12px;">${img.caption||'Photo'}</span>
-      </div>
+    return `<div class="gal-card gal-anim" style="animation-delay:${(i % 9) * 0.04}s;"
+         onclick="openLightboxFull('${safeUrl}','${safeTitle}','${safeDesc}')">
+      ${hasReal
+        ? `<img src="${s.thumbUrl || s.realUrl}" alt="${s.title}"
+               style="height:${h}px;width:100%;object-fit:cover;display:block;"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="gal-card-placeholder" style="background:${s.grad};height:${h}px;display:none;">
+             <span class="gal-ph-icon">${s.icon}</span>
+             <span class="gal-ph-title">${s.title}</span>
+           </div>`
+        : `<div class="gal-card-placeholder" style="background:${s.grad};height:${h}px;">
+             <span class="gal-ph-icon">${s.icon}</span>
+             <span class="gal-ph-title">${s.title}</span>
+           </div>`
+      }
       <div class="gal-card-hover">
-        <div class="gal-card-hover-title">${img.caption||'Photo'}</div>
-        ${img.description ? `<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:3px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${img.description}</div>` : ''}
+        <div class="gal-card-hover-title">${s.title}</div>
+        ${s.description ? `<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:3px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${s.description}</div>` : ''}
         <div class="gal-card-hover-row" style="margin-top:6px;">
-          <span class="gal-card-cat-tag">${catIcon(img.category)} ${img.category}</span>
+          <span class="gal-card-cat-tag">${s.cat}</span>
           <span class="gal-card-zoom">⊕</span>
         </div>
       </div>
     </div>`;
   }).join('');
+
+  // Update stat total
+  const statEl = document.getElementById('gal-stat-total');
+  if (statEl && filterCat === 'all') statEl.textContent = items.length;
 }
 
-// ── Filter ────────────────────────────────────────────────
+// ── Filter handler ─────────────────────────────────────
 function filterGallery(cat) {
   _galActiveCat = cat;
-  document.querySelectorAll('.gal-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  document.querySelectorAll('.gal-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
   renderMasonryGallery(cat);
 }
 
-// ── Full lightbox with prev/next + caption + description ─
-function openGalLightbox(idx) {
-  const img = _galLightbox[idx];
-  if (!img) return;
+// ── Enhanced lightbox (caption + description) ──────────
+function openLightboxFull(url, title, desc) {
+  if (!url) return;
+  const lb    = document.getElementById('lightbox');
+  const img   = document.getElementById('lightbox-img');
+  if (!lb || !img) { openLightbox(url); return; }
 
-  // Remove existing
-  const old = document.getElementById('gal-lb-overlay');
-  if (old) old.remove();
+  img.src = url;
 
-  const total = _galLightbox.length;
-
-  const overlay = document.createElement('div');
-  overlay.id = 'gal-lb-overlay';
-  overlay.style.cssText = `
-    position:fixed;inset:0;z-index:9999;
-    background:rgba(0,0,0,0.94);
-    display:flex;align-items:center;justify-content:center;
-    flex-direction:column;
-    animation:galLbFadeIn .2s ease;
-  `;
-
-  // Inject keyframe once
-  if (!document.getElementById('gal-lb-style')) {
-    const st = document.createElement('style');
-    st.id = 'gal-lb-style';
-    st.textContent = `
-      @keyframes galLbFadeIn{from{opacity:0}to{opacity:1}}
-      @keyframes galLbImgIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-      #gal-lb-overlay img{animation:galLbImgIn .25s ease}
-      #gal-lb-overlay .gal-lb-arrow{
-        position:fixed;top:50%;transform:translateY(-50%);
-        width:48px;height:48px;border-radius:50%;
-        background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);
-        color:#fff;font-size:20px;cursor:pointer;
-        display:flex;align-items:center;justify-content:center;
-        transition:background .2s;backdrop-filter:blur(6px);
-      }
-      #gal-lb-overlay .gal-lb-arrow:hover{background:rgba(255,255,255,.28);}
-      .gal-filter-count{
-        display:inline-block;background:rgba(15,32,87,.15);
-        border-radius:20px;font-size:11px;padding:1px 7px;margin-left:4px;
-        font-weight:700;
-      }
-      .gal-filter-btn.active .gal-filter-count{background:rgba(255,255,255,.25);}
-    `;
-    document.head.appendChild(st);
+  // Inject or update caption panel
+  let cap = document.getElementById('lb-caption-panel');
+  if (!cap) {
+    cap = document.createElement('div');
+    cap.id = 'lb-caption-panel';
+    cap.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:28px 28px 20px;text-align:center;pointer-events:none;';
+    lb.appendChild(cap);
   }
+  cap.innerHTML = (title || desc)
+    ? `${title ? `<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">${title}</div>` : ''}
+       ${desc  ? `<div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.5;max-width:600px;margin:0 auto;">${desc}</div>` : ''}`
+    : '';
 
-  overlay.innerHTML = `
-    <button onclick="document.getElementById('gal-lb-overlay').remove()"
-      style="position:fixed;top:18px;right:22px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);
-        color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;
-        display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(6px);">✕</button>
-
-    ${total > 1 ? `<button class="gal-lb-arrow" style="left:18px;" onclick="event.stopPropagation();_galLbNav(${idx},${total},-1)">‹</button>` : ''}
-    ${total > 1 ? `<button class="gal-lb-arrow" style="right:18px;" onclick="event.stopPropagation();_galLbNav(${idx},${total},1)">›</button>` : ''}
-
-    <img src="${img.url}" alt="${(img.caption||'').replace(/"/g,'&quot;')}"
-         style="max-width:90vw;max-height:78vh;object-fit:contain;border-radius:4px;box-shadow:0 8px 60px rgba(0,0,0,.6);">
-
-    <div style="margin-top:16px;text-align:center;max-width:640px;padding:0 24px;">
-      ${img.caption ? `<div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;">${img.caption}</div>` : ''}
-      ${img.description ? `<div style="font-size:13px;color:rgba(255,255,255,.72);line-height:1.6;">${img.description}</div>` : ''}
-      <div style="margin-top:8px;font-size:12px;color:rgba(255,255,255,.4);">
-        ${catIcon(img.category)} ${img.category}
-        ${total > 1 ? `<span style="margin-left:12px;">${idx+1} / ${total}</span>` : ''}
-      </div>
-    </div>
-  `;
-
-  // Close on backdrop click
-  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
-
-  // Keyboard nav
-  const keyHandler = function(e) {
-    if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', keyHandler); }
-    if (e.key === 'ArrowRight') _galLbNav(idx, total, 1);
-    if (e.key === 'ArrowLeft')  _galLbNav(idx, total, -1);
-  };
-  document.addEventListener('keydown', keyHandler);
-  overlay.addEventListener('remove', () => document.removeEventListener('keydown', keyHandler));
-
-  document.body.appendChild(overlay);
+  lb.classList.add('open');
 }
 
-function _galLbNav(current, total, dir) {
-  const next = (current + dir + total) % total;
-  openGalLightbox(next);
-}
-
-// ── Gallery hero banner auto-rotate ─────────────────────
-let galHeroIdx = 0, galHeroTimer = null;
+// Hero banner auto-rotate
+let galHeroIdx = 0;
+let galHeroTimer = null;
 function galHeroGo(idx) {
   const slides = document.querySelectorAll('.gal-hero-slide');
   const dots   = document.querySelectorAll('.gal-hdot');
@@ -1904,34 +1746,44 @@ function galHeroGo(idx) {
   slides[galHeroIdx].classList.add('active');
   if (dots[galHeroIdx]) dots[galHeroIdx].classList.add('active');
 }
-function galHeroNext() { galHeroGo((galHeroIdx + 1) % document.querySelectorAll('.gal-hero-slide').length); }
-function startGalHeroAuto() { clearInterval(galHeroTimer); galHeroTimer = setInterval(galHeroNext, 4500); }
+function galHeroNext() {
+  const slides = document.querySelectorAll('.gal-hero-slide');
+  galHeroGo((galHeroIdx + 1) % slides.length);
+}
+function startGalHeroAuto() {
+  clearInterval(galHeroTimer);
+  galHeroTimer = setInterval(galHeroNext, 4500);
+}
 
-// ── Page init ────────────────────────────────────────────
+// ── Gallery page init ──────────────────────────────────
 function initGalleryPage() {
-  if (_galState === 'done' && _galImages !== null) {
-    renderMasonryGallery(_galActiveCat); // instant re-render, no re-fetch
+  // Reset load state so navigating away and back re-fetches fresh data
+  if (_galLoadState === 'done' && _galDBImages !== null) {
+    // Already loaded — just re-render (fast)
+    renderMasonryGallery(_galActiveCat);
   } else {
-    _galState = 'idle';
+    _galLoadState = 'idle';
     loadGalleryFromDB();
   }
   startGalHeroAuto();
 }
 
-// DOMContentLoaded — init if gallery page is already active
+// DOMContentLoaded: init gallery if already on that page
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('pp-gallery')?.classList.contains('active')) {
     initGalleryPage();
   }
 });
 
-// Patch goPage — init gallery when user navigates to it
+// Override goPage to hook gallery init
 (function patchGoPage() {
   const orig = window.goPage;
   if (orig) {
     window.goPage = function(id) {
       orig(id);
-      if (id === 'gallery') setTimeout(initGalleryPage, 60);
+      if (id === 'gallery') {
+        setTimeout(initGalleryPage, 60);
+      }
     };
   }
 })();
