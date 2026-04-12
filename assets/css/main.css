@@ -1905,55 +1905,94 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* ====== PAGE HERO ====== */
+/* ====== PAGE HERO — Deep Maroon / Sainik Dark Theme ====== */
 .page-hero {
-  background: linear-gradient(120deg,
-    #dde4f5 0%,
-    #eaeef8 20%,
-    #f5f4f0 50%,
-    #faf5e4 75%,
-    #fdf6d8 100%
-  );
-  padding: 72px 28px 60px;
+  background:
+    radial-gradient(ellipse at 85% 50%, rgba(120, 60, 0, 0.55) 0%, transparent 55%),
+    radial-gradient(ellipse at 15% 50%, rgba(60, 10, 0, 0.4) 0%, transparent 50%),
+    linear-gradient(160deg, #1a0600 0%, #3b0e00 30%, #5a1a00 60%, #3a0c00 100%);
+  padding: 86px 28px 80px;
   text-align: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: none;
   position: relative;
   overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.page-hero::before {
+/* Subtle dot-grid texture */
+.page-hero::after {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 0% 50%, rgba(180, 195, 240, 0.45) 0%, transparent 55%),
-    radial-gradient(ellipse at 100% 50%, rgba(255, 235, 160, 0.40) 0%, transparent 55%);
+  background-image: radial-gradient(circle, rgba(212,160,23,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
   pointer-events: none;
+  z-index: 0;
+}
+
+/* Compass rose — top right */
+.page-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 280px;
+  height: 280px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='rgba(212,160,23,0.18)' stroke-width='0.8'%3E%3Ccircle cx='100' cy='100' r='90'/%3E%3Ccircle cx='100' cy='100' r='70'/%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cline x1='100' y1='10' x2='100' y2='190'/%3E%3Cline x1='10' y1='100' x2='190' y2='100'/%3E%3Cline x1='36' y1='36' x2='164' y2='164'/%3E%3Cline x1='164' y1='36' x2='36' y2='164'/%3E%3Cpolygon points='100,10 106,94 100,82 94,94' fill='rgba(212,160,23,0.3)'/%3E%3Cpolygon points='100,190 106,106 100,118 94,106' fill='rgba(212,160,23,0.15)'/%3E%3Cpolygon points='10,100 94,106 82,100 94,94' fill='rgba(212,160,23,0.15)'/%3E%3Cpolygon points='190,100 106,106 118,100 106,94' fill='rgba(212,160,23,0.25)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Label pill — gold border on dark bg */
+.page-hero .label {
+  background: transparent;
+  border: 1px solid rgba(212, 160, 23, 0.55);
+  color: rgba(212, 160, 23, 0.9);
+  letter-spacing: 3px;
+  font-size: 10px;
+  padding: 5px 16px;
+  position: relative;
+  z-index: 2;
 }
 
 .page-hero h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 50px;
+  font-size: 58px;
   font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 10px;
+  color: #fff;
+  margin-bottom: 14px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  line-height: 1.1;
 }
 
 .page-hero h1 em {
   font-style: italic;
-  color: var(--gold);
+  color: #e8a020;
+  -webkit-text-fill-color: #e8a020;
 }
 
 .page-hero p {
-  font-size: 16px;
-  color: var(--mid);
+  font-size: 15.5px;
+  color: rgba(255, 255, 255, 0.72);
   max-width: 520px;
   margin: 0 auto;
-  line-height: 1.7;
+  line-height: 1.75;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+}
+
+@media(max-width:540px){
+  .page-hero { padding: 64px 20px 60px; min-height: 260px; }
+  .page-hero h1 { font-size: 40px; }
+  .page-hero p  { font-size: 14px; }
 }
 
 /* ====== CONTACT ====== */
