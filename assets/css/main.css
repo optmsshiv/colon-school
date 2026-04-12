@@ -3512,6 +3512,7 @@ footer {
 }
 
 /* ====== FLOATING ACTION CLUSTER ====== */
+/* AI Chat button — stays RIGHT */
 .fab-cluster {
   position: fixed;
   bottom: 28px;
@@ -3520,6 +3521,18 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 12px;
+}
+
+/* WhatsApp + Call — move LEFT */
+.fab-cluster-left {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 12px;
 }
 
