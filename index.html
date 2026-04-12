@@ -25,6 +25,31 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="assets/css/main.css">
+
+  <!-- Admission Alert Modal Styles -->
+  <style>
+    @keyframes admModalIn {
+      to { opacity:1; transform:scale(1) translateY(0); }
+    }
+    @keyframes admBackdropIn {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    #adm-alert-overlay.open {
+      display: flex !important;
+      animation: admBackdropIn .3s ease forwards;
+    }
+    #adm-alert-card button:hover {
+      transform: translateY(-2px) !important;
+      opacity: .92;
+    }
+    #adm-dont-show { cursor:pointer; }
+    @media(max-width:540px){
+      #adm-alert-card { border-radius:16px !important; }
+      #adm-alert-card > div:nth-child(2) { padding:22px 20px 18px !important; }
+      #adm-alert-card > div:first-child  { padding:24px 20px 20px !important; }
+    }
+  </style>
 </head>
 
 <body>
@@ -41,7 +66,186 @@
     </div>
   </div>
 
-  <!-- TOAST -->
+  <!-- ================================================================
+     ADMISSION ALERT MODAL
+     Shows once per session after page load + loader finish
+     ================================================================ -->
+<div id="adm-alert-overlay" aria-modal="true" role="dialog" aria-labelledby="adm-modal-title"
+  style="display:none;position:fixed;inset:0;z-index:8000;align-items:center;justify-content:center;padding:20px;">
+
+  <!-- Backdrop -->
+  <div id="adm-alert-backdrop"
+    onclick="closeAdmModal()"
+    style="position:absolute;inset:0;background:rgba(10,18,50,0.72);backdrop-filter:blur(4px);"></div>
+
+  <!-- Card -->
+  <div id="adm-alert-card" style="
+    position:relative;z-index:1;width:100%;max-width:520px;
+    background:#fff;border-radius:22px;overflow:hidden;
+    box-shadow:0 32px 80px rgba(10,18,50,0.35);
+    animation:admModalIn .45s cubic-bezier(.34,1.56,.64,1) forwards;
+    opacity:0;transform:scale(.88) translateY(24px);">
+
+    <!-- Top band — navy with gold compass watermark -->
+    <div style="
+      background:linear-gradient(135deg,#0f2057 0%,#1a3580 60%,#0f2057 100%);
+      padding:32px 32px 28px;text-align:center;position:relative;overflow:hidden;">
+
+      <!-- Decorative compass watermark -->
+      <svg style="position:absolute;top:-30px;right:-30px;width:180px;height:180px;opacity:.08;" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="95" stroke="#d4a017" stroke-width="1"/>
+        <circle cx="100" cy="100" r="75" stroke="#d4a017" stroke-width="0.7"/>
+        <circle cx="100" cy="100" r="50" stroke="#d4a017" stroke-width="0.7"/>
+        <line x1="100" y1="5" x2="100" y2="195" stroke="#d4a017" stroke-width="0.5"/>
+        <line x1="5" y1="100" x2="195" y2="100" stroke="#d4a017" stroke-width="0.5"/>
+        <line x1="33" y1="33" x2="167" y2="167" stroke="#d4a017" stroke-width="0.5"/>
+        <line x1="167" y1="33" x2="33" y2="167" stroke="#d4a017" stroke-width="0.5"/>
+        <polygon points="100,5 107,93 100,80 93,93" fill="#d4a017"/>
+        <polygon points="100,195 107,107 100,120 93,107" fill="#d4a017" opacity=".5"/>
+        <polygon points="5,100 93,107 80,100 93,93" fill="#d4a017" opacity=".5"/>
+        <polygon points="195,100 107,107 120,100 107,93" fill="#d4a017"/>
+      </svg>
+
+      <!-- Badge pill -->
+      <div style="
+        display:inline-flex;align-items:center;gap:6px;
+        background:rgba(212,160,23,0.18);border:1px solid rgba(212,160,23,0.45);
+        border-radius:100px;padding:5px 16px;
+        font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+        color:#d4a017;margin-bottom:16px;">
+        🎖️ Admissions Now Open
+      </div>
+
+      <!-- School emblem circle -->
+      <div style="
+        width:64px;height:64px;border-radius:50%;
+        background:linear-gradient(135deg,#d4a017,#b8860b);
+        display:flex;align-items:center;justify-content:center;
+        margin:0 auto 16px;
+        box-shadow:0 6px 20px rgba(212,160,23,0.4);
+        font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#fff;">
+        CSV
+      </div>
+
+      <h2 id="adm-modal-title" style="
+        font-family:'Cinzel',serif;font-size:22px;font-weight:700;
+        color:#fff;margin-bottom:6px;line-height:1.2;">
+        Colonel's Sainik Vidyalaya
+      </h2>
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(212,160,23,0.9);margin:0;">
+        "Cradle For Excellence"
+      </p>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:28px 32px 24px;text-align:center;">
+
+      <!-- Session pill -->
+      <div style="
+        display:inline-block;background:#e8edf8;border-radius:8px;
+        padding:8px 20px;margin-bottom:20px;">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#1a3580;">
+          Session
+        </span>
+        <span style="font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:#0f2057;margin-left:8px;" id="adm-modal-session">
+          2026–27
+        </span>
+      </div>
+
+      <p style="font-size:15px;color:#44475a;line-height:1.75;margin-bottom:22px;">
+        Admissions are <strong style="color:#0f2057;">open</strong> for the
+        <strong style="color:#0f2057;" id="adm-modal-session2">2026–27</strong> session across
+        <strong style="color:#0f2057;">Day Scholar</strong>,
+        <strong style="color:#0f2057;">Day Boarder</strong> &amp;
+        <strong style="color:#0f2057;">Full Boarder</strong> programs.<br>
+        <span style="font-size:13.5px;color:#7a7d94;">Nursery to Class VIII · CBSE Curriculum</span>
+      </p>
+
+      <!-- Countdown + last date -->
+      <div style="
+        background:linear-gradient(135deg,#fdf0c0,#fdfcf0);
+        border:1.5px solid rgba(184,134,11,0.25);
+        border-radius:14px;padding:16px 20px;margin-bottom:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#b8860b;margin-bottom:10px;">
+          ⏳ Last Date to Apply
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:#0f2057;" id="adm-modal-lastdate">
+          May 31, 2026
+        </div>
+        <!-- Countdown -->
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;" id="adm-countdown">
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:#0f2057;line-height:1;" id="cd-days">--</div>
+            <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:#b8860b;margin-top:2px;">Days</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:20px;color:rgba(184,134,11,0.4);line-height:1.2;">:</div>
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:#0f2057;line-height:1;" id="cd-hrs">--</div>
+            <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:#b8860b;margin-top:2px;">Hrs</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:20px;color:rgba(184,134,11,0.4);line-height:1.2;">:</div>
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:#0f2057;line-height:1;" id="cd-min">--</div>
+            <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:#b8860b;margin-top:2px;">Min</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:20px;color:rgba(184,134,11,0.4);line-height:1.2;">:</div>
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:#0f2057;line-height:1;" id="cd-sec">--</div>
+            <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:#b8860b;margin-top:2px;">Sec</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button onclick="closeAdmModal();goPage('apply')" style="
+          flex:1;min-width:140px;padding:13px 20px;border-radius:11px;
+          background:linear-gradient(135deg,#0f2057,#1a3580);
+          color:#fff;font-size:13.5px;font-weight:700;border:none;cursor:pointer;
+          font-family:'DM Sans',sans-serif;
+          box-shadow:0 4px 18px rgba(15,32,87,0.28);
+          transition:transform .2s,box-shadow .2s;">
+          🎓 Apply Now
+        </button>
+        <button onclick="closeAdmModal();goPage('admissions')" style="
+          flex:1;min-width:140px;padding:13px 20px;border-radius:11px;
+          background:linear-gradient(135deg,#d4a017,#b8860b);
+          color:#fff;font-size:13.5px;font-weight:700;border:none;cursor:pointer;
+          font-family:'DM Sans',sans-serif;
+          box-shadow:0 4px 18px rgba(184,134,11,0.28);
+          transition:transform .2s,box-shadow .2s;">
+          📋 Learn More
+        </button>
+      </div>
+
+      <!-- Dismiss -->
+      <button onclick="closeAdmModal()" style="
+        display:block;width:100%;margin-top:14px;
+        background:none;border:none;color:#7a7d94;
+        font-size:12.5px;cursor:pointer;font-family:'DM Sans',sans-serif;
+        transition:color .2s;padding:6px;">
+        Maybe later — I'll explore the site first
+      </button>
+
+      <!-- Don't show again -->
+      <label style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:8px;cursor:pointer;">
+        <input type="checkbox" id="adm-dont-show" style="width:14px;height:14px;accent-color:#0f2057;">
+        <span style="font-size:11.5px;color:#7a7d94;">Don't show this again</span>
+      </label>
+    </div>
+
+    <!-- Close X -->
+    <button onclick="closeAdmModal()" aria-label="Close" style="
+      position:absolute;top:14px;right:16px;
+      background:rgba(255,255,255,0.15);border:none;
+      width:30px;height:30px;border-radius:50%;
+      color:#fff;font-size:16px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:background .2s;z-index:10;">✕</button>
+  </div>
+</div>
+
+<!-- TOAST -->
   <div class="toast" id="toast">✅ <span id="toast-msg">Saved successfully!</span></div>
 
   <!-- LIGHTBOX -->
@@ -895,13 +1099,13 @@
         <!-- Background slides -->
         <div class="gal-hero-slides" id="gal-hero-slides">
           <div class="gal-hero-slide active"
-            style="background:linear-gradient(120deg,#dde4f5 0%,#eaeef8 20%,#f5f4f0 50%,#faf5e4 75%,#fdf6d8 100%);">
+            style="background:linear-gradient(145deg,#3b1a08 0%,#7a3010 45%,#c45c10 100%);">
             <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image.png')"></div>
           </div>
-          <div class="gal-hero-slide" style="background:linear-gradient(120deg,#e2e8f8 0%,#edf0f7 25%,#f8f5ee 55%,#fdf3d4 100%);">
+          <div class="gal-hero-slide" style="background:linear-gradient(145deg,#5c2008 0%,#3b1a08 55%,#8a4010 100%);">
             <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image_1.jpeg')"></div>
           </div>
-          <div class="gal-hero-slide" style="background:linear-gradient(120deg,#d8e2f4 0%,#eceef8 30%,#f7f4ec 60%,#fef5d6 100%);">
+          <div class="gal-hero-slide" style="background:linear-gradient(145deg,#c45c10 0%,#7a3010 50%,#3b1a08 100%);">
             <div class="gal-hero-slide-img" style="background-image:url('/assets/images/school_image.png')"></div>
           </div>
         </div>
@@ -1551,6 +1755,145 @@
   <!-- gallery-integration-patch.js removed: gallery DB fetch now built into main.js -->
 
   <!-- PAGE LOADER SCRIPT -->
+  
+  <!-- Admission Alert Modal Logic -->
+  <script>
+  (function(){
+    var STORAGE_KEY = 'csv_adm_modal_dismissed';
+
+    // ── helpers ──────────────────────────────────────────────
+    function getLastDate(){
+      // Try to read from D (main.js data object) or fall back
+      try { return (window.D && D.admLastDate) ? D.admLastDate : 'May 31, 2026'; }
+      catch(e){ return 'May 31, 2026'; }
+    }
+    function getSession(){
+      try { return (window.D && D.admSession) ? D.admSession.replace(' Session','') : '2026–27'; }
+      catch(e){ return '2026–27'; }
+    }
+
+    // ── countdown ────────────────────────────────────────────
+    var _cdTimer = null;
+    function startCountdown(targetDateStr){
+      function tick(){
+        var now    = new Date().getTime();
+        var target = new Date(targetDateStr).getTime();
+        var diff   = target - now;
+        if(diff <= 0){
+          document.getElementById('adm-countdown').innerHTML =
+            '<span style="font-size:13px;color:#dc2626;font-weight:700;">⚠️ Deadline passed — contact us</span>';
+          clearInterval(_cdTimer);
+          return;
+        }
+        var days = Math.floor(diff / 86400000);
+        var hrs  = Math.floor((diff % 86400000) / 3600000);
+        var min  = Math.floor((diff % 3600000)  / 60000);
+        var sec  = Math.floor((diff % 60000)    / 1000);
+        var set  = function(id,v){ var el=document.getElementById(id); if(el) el.textContent = String(v).padStart(2,'0'); };
+        set('cd-days', days);
+        set('cd-hrs',  hrs);
+        set('cd-min',  min);
+        set('cd-sec',  sec);
+      }
+      tick();
+      _cdTimer = setInterval(tick, 1000);
+    }
+
+    // ── open ─────────────────────────────────────────────────
+    function openAdmModal(){
+      var overlay = document.getElementById('adm-alert-overlay');
+      if(!overlay) return;
+
+      // Populate dynamic data
+      var session  = getSession();
+      var lastDate = getLastDate();
+      var s1 = document.getElementById('adm-modal-session');
+      var s2 = document.getElementById('adm-modal-session2');
+      var ld = document.getElementById('adm-modal-lastdate');
+      if(s1) s1.textContent = session;
+      if(s2) s2.textContent = session;
+      if(ld) ld.textContent = lastDate;
+
+      // Start countdown
+      // Try to parse lastDate — handle "May 31, 2026" style
+      var parsedDate = new Date(lastDate);
+      if(!isNaN(parsedDate.getTime())) startCountdown(lastDate);
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // ── close (global) ───────────────────────────────────────
+    window.closeAdmModal = function(){
+      var overlay = document.getElementById('adm-alert-overlay');
+      var card    = document.getElementById('adm-alert-card');
+      if(!overlay) return;
+
+      // Check "don't show again"
+      var dontShow = document.getElementById('adm-dont-show');
+      if(dontShow && dontShow.checked){
+        try{ localStorage.setItem(STORAGE_KEY, '1'); } catch(e){}
+      } else {
+        // Only skip for this session (sessionStorage)
+        try{ sessionStorage.setItem(STORAGE_KEY, '1'); } catch(e){}
+      }
+
+      // Animate out
+      if(card){
+        card.style.transition = 'opacity .25s, transform .25s';
+        card.style.opacity    = '0';
+        card.style.transform  = 'scale(.92) translateY(16px)';
+      }
+      setTimeout(function(){
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        if(card){
+          card.style.transition = '';
+          card.style.opacity    = '';
+          card.style.transform  = '';
+        }
+        if(_cdTimer) clearInterval(_cdTimer);
+      }, 280);
+    };
+
+    // ── close on Escape key ──────────────────────────────────
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeAdmModal();
+    });
+
+    // ── trigger after loader hides ───────────────────────────
+    function maybeShow(){
+      // Don't show if dismissed permanently (localStorage)
+      try{
+        if(localStorage.getItem(STORAGE_KEY) === '1') return;
+        // Don't show again in same browser session
+        if(sessionStorage.getItem(STORAGE_KEY) === '1') return;
+      } catch(e){}
+
+      // Show after loader hides (wait for pl-hidden class)
+      // Plus extra 800ms so visitor has a moment to see the page
+      var delay = 1200;
+      var loader = document.getElementById('page-loader');
+
+      function waitForLoader(){
+        if(!loader || loader.classList.contains('pl-hidden')){
+          setTimeout(openAdmModal, delay);
+        } else {
+          setTimeout(waitForLoader, 150);
+        }
+      }
+      waitForLoader();
+    }
+
+    // Init once DOM is ready
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', maybeShow);
+    } else {
+      maybeShow();
+    }
+  })();
+  </script>
+
   <script>
     (function () {
       var loader = document.getElementById('page-loader');
