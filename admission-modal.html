@@ -1,0 +1,701 @@
+<!-- ============================================================
+     ADMISSION ALERT MODAL — Colonel's Sainik Vidyalaya
+     PASTE THIS BLOCK just before </body> in index.html
+     (above the <script src="assets/js/main.js"> line)
+     ============================================================ -->
+
+<!-- OVERLAY -->
+<div id="adm-modal-overlay" aria-modal="true" role="dialog" aria-label="Admission Alert">
+
+  <div id="adm-modal-box">
+
+    <!-- ── CLOSE BUTTON ── -->
+    <button id="adm-close-btn" onclick="closeAdmModal()" aria-label="Close">✕</button>
+
+    <!-- ── HERO IMAGE SECTION ── -->
+    <div id="adm-hero">
+      <img src="assets/images/school_image.png" alt="Colonel's Sainik Vidyalaya Campus" id="adm-hero-img">
+      <div id="adm-hero-overlay"></div>
+
+      <!-- Live badge -->
+      <div id="adm-live-badge">
+        <span id="adm-live-dot"></span>
+        Admissions Open · 2026–27
+      </div>
+
+      <!-- Hero text on image -->
+      <div id="adm-hero-text">
+        <div id="adm-school-row">
+          <img src="assets/images/logo.png" alt="Logo" id="adm-logo">
+          <div>
+            <div id="adm-school-name">Colonel's Sainik Vidyalaya</div>
+            <div id="adm-school-sub">Madhepura, Bihar · CBSE School · Est. 2026</div>
+          </div>
+        </div>
+        <h2 id="adm-headline">Enrol Your Child in <em>Excellence</em></h2>
+        <p id="adm-subline">A premier CBSE Sainik school — shaping disciplined leaders from Nursery to Class VIII.</p>
+      </div>
+    </div>
+
+    <!-- ── BODY ── -->
+    <div id="adm-body">
+
+      <!-- Alert bar -->
+      <div id="adm-alert-bar">
+        <span id="adm-alert-icon">🗓️</span>
+        <span>Entrance Test for Class I–VII &amp; Direct Admission (Nur, LKG, UKG) &nbsp;·&nbsp; <strong>29th March 2026</strong></span>
+      </div>
+
+      <!-- Admission type cards -->
+      <div id="adm-cards">
+
+        <div class="adm-card adm-card-blue">
+          <div class="adm-card-icon">📝</div>
+          <div class="adm-card-label">Entrance Test</div>
+          <div class="adm-card-class">Class I – VII</div>
+          <div class="adm-card-date">29 March 2026</div>
+          <div class="adm-card-tag">Written Test Required</div>
+        </div>
+
+        <div class="adm-card adm-card-gold">
+          <div class="adm-card-icon">🎓</div>
+          <div class="adm-card-label">Direct Admission</div>
+          <div class="adm-card-class">Nur · LKG · UKG</div>
+          <div class="adm-card-date">29 March 2026</div>
+          <div class="adm-card-tag">No Test Required</div>
+        </div>
+
+      </div>
+
+      <!-- Features + Contact side-by-side -->
+      <div id="adm-info-row">
+
+        <!-- Features -->
+        <div id="adm-features">
+          <div class="adm-section-title">Our Features</div>
+          <ul id="adm-feat-list">
+            <li><span class="adm-tick">✓</span> Certified &amp; Experienced Teachers</li>
+            <li><span class="adm-tick">✓</span> Hostel for Boys (Class III – VII)</li>
+            <li><span class="adm-tick">✓</span> Language &amp; Communication Lab</li>
+            <li><span class="adm-tick">✓</span> Transport Facility Available</li>
+            <li><span class="adm-tick">✓</span> Sainik Drill &amp; Discipline</li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div id="adm-contact">
+          <div class="adm-section-title">Contact &amp; Info</div>
+          <ul id="adm-contact-list">
+            <li>
+              <span class="adm-contact-ico">📞</span>
+              <span>
+                <a href="tel:+917484906747">+91 7484906747</a><br>
+                <a href="tel:+917482004247">+91 7482004247</a>
+              </span>
+            </li>
+            <li>
+              <span class="adm-contact-ico">🌐</span>
+              <span><a href="https://colonelsainikvidyalaya.in" target="_blank">colonelsainikvidyalaya.in</a></span>
+            </li>
+            <li>
+              <span class="adm-contact-ico">✉️</span>
+              <span><a href="mailto:colonelsainikvidyalaya@gmail.com">colonelsainikvidyalaya@gmail.com</a></span>
+            </li>
+            <li>
+              <span class="adm-contact-ico">📍</span>
+              <span>N.H 107 Budhma, Madhepura, Bihar</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Program chips -->
+      <div id="adm-chips">
+        <span class="adm-chip adm-chip-navy">🏫 Day Scholar</span>
+        <span class="adm-chip adm-chip-navy">🌆 Day Boarder</span>
+        <span class="adm-chip adm-chip-navy">🏠 Full Boarder</span>
+        <span class="adm-chip adm-chip-gold">📋 CBSE Affiliated</span>
+        <span class="adm-chip adm-chip-green">🪖 Sainik Discipline</span>
+      </div>
+
+      <!-- CTA buttons -->
+      <div id="adm-cta-row">
+        <button class="adm-btn adm-btn-primary" onclick="goPage('apply');closeAdmModal();">
+          🎓 Apply Online →
+        </button>
+        <button class="adm-btn adm-btn-outline" onclick="goPage('admissions');closeAdmModal();">
+          📋 Admission Details
+        </button>
+        <a class="adm-btn adm-btn-call" href="tel:+917484906747">
+          📞 Call Now
+        </a>
+      </div>
+
+      <!-- Footer row -->
+      <div id="adm-footer-row">
+        <label id="adm-no-show-label">
+          <input type="checkbox" id="adm-no-show"> Don't show again this session
+        </label>
+        <span id="adm-session-tag">Academic Year 2026–27</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STYLES — add to main.css OR keep here in a <style> block
+     ============================================================ -->
+<style>
+/* ── Overlay ── */
+#adm-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(8, 18, 52, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: adm-fade-in 0.35s ease;
+}
+#adm-modal-overlay.adm-show {
+  display: flex;
+}
+
+/* ── Modal box ── */
+#adm-modal-box {
+  background: #fff;
+  border-radius: 20px;
+  max-width: 560px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(8, 18, 52, 0.5), 0 0 0 1px rgba(255,255,255,0.08);
+  animation: adm-slide-up 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  max-height: 92vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-mid) transparent;
+}
+
+/* ── Close button ── */
+#adm-close-btn {
+  position: absolute;
+  top: 13px;
+  right: 14px;
+  z-index: 10;
+  background: rgba(0,0,0,0.38);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  color: #fff;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  backdrop-filter: blur(4px);
+}
+#adm-close-btn:hover {
+  background: rgba(220, 38, 38, 0.75);
+  transform: rotate(90deg);
+}
+
+/* ── Hero image section ── */
+#adm-hero {
+  position: relative;
+  height: 210px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+#adm-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+  transition: transform 6s ease;
+}
+#adm-modal-box:hover #adm-hero-img {
+  transform: scale(1.04);
+}
+#adm-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8,18,52,0.15) 0%,
+    rgba(8,18,52,0.35) 40%,
+    rgba(8,18,52,0.82) 100%
+  );
+}
+
+/* ── Live badge ── */
+#adm-live-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(220, 38, 38, 0.92);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 12px rgba(220,38,38,0.4);
+}
+#adm-live-dot {
+  width: 7px;
+  height: 7px;
+  background: #fff;
+  border-radius: 50%;
+  animation: adm-pulse-dot 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes adm-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── Hero text ── */
+#adm-hero-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px 18px;
+}
+#adm-school-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+#adm-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 2px solid rgba(255,215,0,0.5);
+  object-fit: contain;
+  background: #fff;
+  flex-shrink: 0;
+}
+#adm-school-name {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+#adm-school-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: rgba(255,215,0,0.85);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+#adm-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  margin: 0 0 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+#adm-headline em {
+  color: #ffd700;
+  font-style: italic;
+}
+#adm-subline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.82);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Body ── */
+#adm-body {
+  padding: 18px 22px 20px;
+}
+
+/* ── Alert bar ── */
+#adm-alert-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #fff8e1, #fff3cd);
+  border: 1.5px solid #f0c040;
+  border-left: 4px solid #b8860b;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #7a5800;
+  margin-bottom: 16px;
+  line-height: 1.45;
+}
+#adm-alert-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* ── Admission cards ── */
+#adm-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.adm-card {
+  border-radius: 13px;
+  padding: 15px 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.adm-card::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  opacity: 0.12;
+}
+.adm-card-blue {
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border: 1.5px solid #c7d2fe;
+}
+.adm-card-blue::before { background: #1a3580; }
+.adm-card-gold {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+  border: 1.5px solid #fcd34d;
+}
+.adm-card-gold::before { background: #b8860b; }
+.adm-card-icon {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+.adm-card-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--light);
+  margin-bottom: 4px;
+}
+.adm-card-class {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 5px;
+  line-height: 1.25;
+}
+.adm-card-date {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b8860b;
+  margin-bottom: 8px;
+}
+.adm-card-tag {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.adm-card-blue .adm-card-tag {
+  background: rgba(26,53,128,0.12);
+  color: #1a3580;
+}
+.adm-card-gold .adm-card-tag {
+  background: rgba(184,134,11,0.15);
+  color: #7a5800;
+}
+
+/* ── Info row ── */
+#adm-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 15px;
+  background: var(--off);
+  border-radius: 13px;
+  padding: 14px;
+  border: 1px solid var(--border);
+}
+.adm-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid var(--border);
+}
+
+/* Features */
+#adm-feat-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#adm-feat-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  color: var(--mid);
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  line-height: 1.35;
+}
+.adm-tick {
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Contact */
+#adm-contact-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#adm-contact-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.4;
+}
+.adm-contact-ico {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+#adm-contact-list a {
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+#adm-contact-list a:hover { color: var(--gold); }
+
+/* ── Program chips ── */
+#adm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+.adm-chip {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 13px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+.adm-chip-navy {
+  background: var(--navy-light);
+  color: var(--navy);
+  border: 1px solid rgba(26,53,128,0.18);
+}
+.adm-chip-gold {
+  background: var(--gold-light);
+  color: var(--gold);
+  border: 1px solid rgba(184,134,11,0.22);
+}
+.adm-chip-green {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid rgba(22,163,74,0.2);
+}
+
+/* ── CTA buttons ── */
+#adm-cta-row {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.adm-btn {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  border-radius: 11px;
+  padding: 12px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+}
+.adm-btn:hover { transform: translateY(-2px); }
+.adm-btn-primary {
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  color: #ffd700;
+  box-shadow: 0 4px 18px rgba(15,32,87,0.28);
+}
+.adm-btn-primary:hover {
+  box-shadow: 0 8px 28px rgba(15,32,87,0.38);
+}
+.adm-btn-outline {
+  background: #fff;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+}
+.adm-btn-outline:hover {
+  background: var(--navy);
+  color: #ffd700;
+}
+.adm-btn-call {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(22,163,74,0.25);
+}
+.adm-btn-call:hover {
+  box-shadow: 0 8px 24px rgba(22,163,74,0.38);
+}
+
+/* ── Footer row ── */
+#adm-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#adm-no-show-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+#adm-no-show-label input {
+  accent-color: var(--navy);
+  cursor: pointer;
+}
+#adm-session-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: var(--light);
+  background: var(--navy-light);
+  border-radius: 20px;
+  padding: 4px 11px;
+  font-weight: 500;
+}
+
+/* ── Animations ── */
+@keyframes adm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes adm-slide-up {
+  from { opacity: 0; transform: translateY(44px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* ── Mobile responsive ── */
+@media (max-width: 520px) {
+  #adm-hero { height: 175px; }
+  #adm-headline { font-size: 21px; }
+  #adm-subline { display: none; }
+  #adm-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+  #adm-info-row { grid-template-columns: 1fr; gap: 10px; }
+  #adm-cta-row { flex-direction: column; }
+  .adm-btn { width: 100%; }
+  #adm-body { padding: 14px 16px 16px; }
+  #adm-alert-bar { font-size: 12px; }
+}
+@media (max-width: 360px) {
+  #adm-cards { grid-template-columns: 1fr; }
+  .adm-card { padding: 12px; }
+}
+</style>
+
+<!-- ============================================================
+     SCRIPT — paste this right after the HTML above
+     ============================================================ -->
+<script>
+(function () {
+  var STORAGE_KEY = 'csv_adm_modal_v2_dismissed';
+  var overlay     = document.getElementById('adm-modal-overlay');
+
+  function showAdmModal() {
+    // Skip if user already dismissed this session
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
+    overlay.classList.add('adm-show');
+    document.body.style.overflow = 'hidden'; // prevent bg scroll
+  }
+
+  window.closeAdmModal = function () {
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.3s ease';
+    setTimeout(function () {
+      overlay.classList.remove('adm-show');
+      overlay.style.opacity = '';
+      overlay.style.transition = '';
+      document.body.style.overflow = '';
+    }, 300);
+    if (document.getElementById('adm-no-show').checked) {
+      sessionStorage.setItem(STORAGE_KEY, '1');
+    }
+  };
+
+  // Close on overlay click (outside modal box)
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) window.closeAdmModal();
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('adm-show')) {
+      window.closeAdmModal();
+    }
+  });
+
+  // Show after page loader finishes (~2.4s delay)
+  setTimeout(showAdmModal, 2400);
+})();
+</script>
